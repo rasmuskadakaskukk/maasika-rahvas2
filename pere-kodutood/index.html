@@ -1,0 +1,2228 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Pere kodutööd</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: one narrow column. A dark money panel on top, a card per person under it, the log as a ruled list, and sheets that slide up from the bottom for forms. */
+:root{
+  --bg:#EDF2F3;
+  --surface:#FFFFFF;
+  --surface-2:#E2EAEC;
+  --ink:#0F2329;
+  --ink-2:#496169;
+  --line:#D0DBDE;
+  --accent:#0A6B80;
+  --accent-ink:#FFFFFF;
+  --accent-soft:#D6ECF1;
+  --good:#17794A;
+  --good-soft:#DAF0E3;
+  --warn:#8F5206;
+  --warn-soft:#F9E8C8;
+  --danger:#B3261E;
+  --danger-soft:#FBE2DF;
+  --panel:#0D3A46;
+  --panel-ink:#EAF6F8;
+  --panel-dim:#A9CDD4;
+  --av-bg-s:48%; --av-bg-l:87%; --av-fg-s:58%; --av-fg-l:25%; --bar-l:48%;
+  --font-display:"Bricolage Grotesque","Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-body:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B181D;
+    --surface:#12262D;
+    --surface-2:#1B343C;
+    --ink:#E4EFF1;
+    --ink-2:#9BB3BA;
+    --line:#27424B;
+    --accent:#62C6DB;
+    --accent-ink:#052229;
+    --accent-soft:#143F4A;
+    --good:#63D494;
+    --good-soft:#133A29;
+    --warn:#F0B55E;
+    --warn-soft:#42300E;
+    --danger:#FF8F85;
+    --danger-soft:#4A1E1A;
+    --panel:#12404C;
+    --panel-ink:#EAF6F8;
+    --panel-dim:#A9CDD4;
+    --av-bg-s:34%; --av-bg-l:25%; --av-fg-s:72%; --av-fg-l:82%; --bar-l:58%;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0B181D;
+  --surface:#12262D;
+  --surface-2:#1B343C;
+  --ink:#E4EFF1;
+  --ink-2:#9BB3BA;
+  --line:#27424B;
+  --accent:#62C6DB;
+  --accent-ink:#052229;
+  --accent-soft:#143F4A;
+  --good:#63D494;
+  --good-soft:#133A29;
+  --warn:#F0B55E;
+  --warn-soft:#42300E;
+  --danger:#FF8F85;
+  --danger-soft:#4A1E1A;
+  --panel:#12404C;
+  --panel-ink:#EAF6F8;
+  --panel-dim:#A9CDD4;
+  --av-bg-s:34%; --av-bg-l:25%; --av-fg-s:72%; --av-fg-l:82%; --bar-l:58%;
+  color-scheme:dark;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.45 var(--font-body);-webkit-font-smoothing:antialiased;min-height:100%}
+h1,h2,h3,p,dl,dd,ul{margin:0;padding:0}
+ul{list-style:none}
+h1,h2,h3{font-family:var(--font-display);line-height:1.15;text-wrap:balance}
+button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+button:disabled{cursor:default;opacity:.5}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+.muted{color:var(--ink-2)}
+.small{font-size:14px}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:20;background:var(--bg);background:color-mix(in srgb,var(--bg) 90%,transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.top-in{max-width:720px;margin:0 auto;padding:12px 16px;display:grid;gap:10px}
+.brand-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px}
+.brand{font-size:24px;font-weight:700;letter-spacing:-.01em}
+.monthbar{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;gap:8px}
+.monthlabel{display:flex;flex-direction:column;align-items:center;line-height:1.2;min-width:0}
+.monthlabel strong{font-family:var(--font-display);font-size:19px;font-weight:600}
+.link{border:0;background:none;padding:2px 6px;color:var(--accent);font-weight:600;font-size:14px;text-decoration:underline;text-underline-offset:3px}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font-weight:600;font-size:15px;white-space:nowrap}
+.btn svg{width:20px;height:20px;flex:none}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn-danger{background:var(--danger-soft);border-color:transparent;color:var(--danger)}
+.btn-small{min-height:38px;padding:0 14px;font-size:14px}
+.btn.grow{flex:1}
+.iconbtn{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center;padding:0;flex:none}
+.iconbtn svg{width:22px;height:22px}
+.mini{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--line);background:var(--bg);display:grid;place-items:center;padding:0;color:var(--ink-2);flex:none}
+.mini svg{width:18px;height:18px}
+
+/* page */
+main{max-width:720px;margin:0 auto;padding:16px 16px 112px;display:grid;gap:22px;align-content:start}
+.banner{padding:12px 14px;border-radius:14px;background:var(--surface-2);font-size:14px}
+.banner.warn{background:var(--warn-soft);color:var(--warn)}
+.banner.danger{background:var(--danger-soft);color:var(--danger)}
+.sec-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.sec-title h2{font-size:21px;font-weight:700}
+.sec-title .muted{font-size:14px}
+.ph{height:92px;border-radius:20px;background:var(--surface-2);animation:pulse 1.3s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+.empty{padding:22px 16px;text-align:center;color:var(--ink-2);border:1.5px dashed var(--line);border-radius:20px}
+
+/* money panel */
+.panel{background:var(--panel);color:var(--panel-ink);border-radius:24px;padding:20px 18px 16px;display:grid;gap:16px}
+.panel-top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--panel-dim)}
+.big{font-family:var(--font-display);font-weight:700;font-size:44px;line-height:1;letter-spacing:-.02em;margin-top:8px}
+.pct{text-align:right;font-family:var(--font-display);font-weight:700;font-size:26px;line-height:1.1}
+.pct small{display:block;font-family:var(--font-body);font-weight:500;font-size:13px;color:var(--panel-dim)}
+.seg{display:flex;height:14px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.16)}
+.seg i{display:block;height:100%;background:hsl(var(--h) 62% var(--bar-l))}
+.seg i+i{margin-left:2px}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.tiles>div{background:rgba(255,255,255,.08);border-radius:14px;padding:10px 12px;min-width:0}
+.tiles dt{font-size:12px;color:var(--panel-dim);font-weight:600}
+.tiles dd{font-family:var(--font-display);font-weight:700;font-size:18px;line-height:1.2;margin-top:3px;overflow-wrap:anywhere}
+.tiles dd.sub{font-family:var(--font-body);font-weight:500;font-size:12px;color:var(--panel-dim);margin-top:2px}
+@media (max-width:420px){.tiles{grid-template-columns:1fr 1fr}.tiles>div:last-child{grid-column:1/-1}}
+.panel-link{justify-self:start;display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 4px;border:0;background:none;color:var(--panel-ink);font-weight:600;font-size:14px;text-decoration:underline;text-underline-offset:3px}
+.panel-link svg{width:18px;height:18px}
+
+/* people */
+.people{display:grid;gap:12px}
+.person{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px;display:grid;gap:12px}
+.person-head{display:flex;align-items:center;gap:12px}
+.avatar{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-family:var(--font-display);font-weight:700;font-size:19px;background:hsl(var(--h) var(--av-bg-s) var(--av-bg-l));color:hsl(var(--h) var(--av-fg-s) var(--av-fg-l))}
+.person-name{flex:1;min-width:0;border:0;background:none;padding:0;text-align:left;font-weight:700;font-size:17px;line-height:1.25;overflow-wrap:anywhere}
+.person-name small{display:block;font-weight:500;font-size:14px;color:var(--ink-2)}
+.person-earn{text-align:right;font-family:var(--font-display);font-weight:700;font-size:24px;line-height:1.05}
+.person-earn small{display:block;font-family:var(--font-body);font-weight:500;font-size:12px;color:var(--ink-2);margin-top:3px}
+.bar{height:10px;border-radius:999px;background:var(--surface-2);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:999px;background:hsl(var(--h) 62% var(--bar-l))}
+.status{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;min-height:30px;padding:0 12px;border-radius:999px;font-size:14px;font-weight:700}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+
+/* log */
+.filters{display:flex;gap:8px;overflow-x:auto;padding:2px 16px 8px;margin:0 -16px;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.fchip{flex:none;min-height:40px;padding:0 16px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);font-weight:600;font-size:15px}
+.fchip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.logsum{color:var(--ink-2);font-size:15px}
+.logsum strong{color:var(--ink)}
+.day{display:grid;gap:8px}
+.day-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.day-head h2{font-size:17px;font-weight:700}
+.day-head span{font-size:14px;color:var(--ink-2);white-space:nowrap}
+.entries{background:var(--surface);border:1px solid var(--line);border-radius:20px;overflow:hidden}
+.entry{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;padding:14px;border-top:1px solid var(--line)}
+.entry:first-child{border-top:0}
+.entry .avatar{width:38px;height:38px;font-size:16px}
+.entry h3{font-family:var(--font-body);font-size:16px;font-weight:700;overflow-wrap:anywhere}
+.meta{display:flex;flex-wrap:wrap;gap:2px 10px;font-size:14px;color:var(--ink-2)}
+.note{margin-top:6px;font-size:14px;overflow-wrap:anywhere}
+.entry-side{display:flex;flex-direction:column;align-items:flex-end;gap:2px;text-align:right}
+.entry-side .dur{font-weight:700;font-size:15px;white-space:nowrap}
+.entry-side .pay{font-size:14px;color:var(--ink-2);white-space:nowrap}
+.entry-acts{display:flex;gap:8px;margin-top:6px}
+.mini.danger{color:var(--danger);background:var(--danger-soft);border-color:transparent}
+.mini:disabled{opacity:.5}
+.confirm-detail{font-size:17px;overflow-wrap:anywhere}
+.thumbs{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.thumb{width:64px;height:64px;padding:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface-2)}
+.thumb img{display:block;width:100%;height:100%;object-fit:cover}
+
+/* settings */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:16px;display:grid;gap:14px}
+.card .sec-title{margin:0}
+.card h3.sub-h{font-size:14px;font-weight:700;color:var(--ink-2);text-transform:uppercase;letter-spacing:.05em}
+.rows{display:grid}
+.rows>div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.rows>div:first-child{border-top:0}
+.rows dt{color:var(--ink-2)}
+.rows dd{font-weight:700;text-align:right}
+.mlist{display:grid}
+.mrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.mrow:first-child{border-top:0}
+.mrow .avatar{width:40px;height:40px;font-size:17px}
+.mrow .mname{flex:1;min-width:0;font-weight:600;overflow-wrap:anywhere}
+.mrow.off .mname{color:var(--ink-2);text-decoration:line-through}
+.taglist{display:flex;flex-wrap:wrap;gap:8px}
+.tag{display:inline-flex;align-items:center;gap:4px;min-height:38px;padding:0 6px 0 14px;border-radius:999px;background:var(--surface-2);font-weight:600;font-size:15px}
+.tag.plain{padding-right:14px}
+.tag button{width:30px;height:30px;border-radius:50%;border:0;background:none;display:grid;place-items:center;padding:0;color:var(--ink-2)}
+.tag button svg{width:16px;height:16px}
+.setup h2{font-size:21px}
+.prev{display:grid;gap:8px}
+.prev:empty{display:none}
+.prev .tag{padding:0 14px;min-height:34px}
+.diag{margin-top:4px;padding:2px 4px;color:var(--ink-2)}
+.diag summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-size:14px;font-weight:600}
+.diag .rows{margin-top:4px}
+.diag .last{font-size:13px;overflow-wrap:anywhere;margin-top:8px}
+.me-tag{display:inline-block;margin-left:8px;padding:1px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:12px;font-weight:700;vertical-align:2px}
+.steps{margin:0;padding-left:22px;display:grid;gap:8px}
+.idlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.idbtn{display:flex;align-items:center;gap:10px;min-height:60px;padding:8px 12px;border-radius:18px;border:1.5px solid var(--line);background:var(--bg);font-weight:700;font-size:16px;text-align:left;overflow-wrap:anywhere}
+.idbtn .avatar{width:40px;height:40px;font-size:17px}
+.prow{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.prow:first-child{border-top:0}
+.prow .ptext{flex:1;min-width:0;font-weight:600;overflow-wrap:anywhere}
+.prow .ptext small{display:block;font-weight:500;font-size:13px;color:var(--ink-2)}
+.chip-label{flex-basis:100%;margin:6px 0 0;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
+.custom-wrap{display:grid;gap:8px}
+.check{display:flex;align-items:center;gap:12px;min-height:44px;font-weight:600;font-size:15px}
+.check input{width:22px;height:22px;margin:0;flex:none;accent-color:var(--accent)}
+
+/* bottom nav */
+.nav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(720px,100%);z-index:30;background:var(--surface);border:1px solid var(--line);border-bottom:0;border-radius:22px 22px 0 0;padding-bottom:env(safe-area-inset-bottom)}
+.nav-in{display:grid;grid-template-columns:repeat(4,1fr)}
+.nav button{position:relative;min-height:60px;border:0;background:none;color:var(--ink-2);font-weight:600;font-size:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:6px 0}
+.nav button svg{width:24px;height:24px}
+.nav button[aria-current="page"]{color:var(--accent)}
+
+/* dialogs and sheets */
+.dlg-wrap{position:fixed;top:0;right:0;bottom:0;left:0;z-index:50;display:flex;align-items:flex-end;justify-content:center;background:rgba(6,18,22,.6);overscroll-behavior:contain}
+.dlg-wrap[hidden]{display:none}
+.dlg{color:var(--ink);background:var(--surface);width:min(560px,100%);max-width:100%;max-height:92vh;max-height:92dvh;border-radius:26px 26px 0 0;margin:0 auto;overflow:hidden;display:flex;flex-direction:column;animation:rise .22s ease-out;outline:0}
+html.kb .dlg{max-height:calc(var(--vvh) * .92);margin-bottom:var(--kb)}
+html.dlg-on,html.dlg-on body{overflow:hidden}
+@keyframes rise{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+@media (min-width:640px){.dlg-wrap{align-items:center}.dlg{margin:auto;border-radius:26px}}
+.dlg form{display:flex;flex-direction:column;min-height:0;flex:1;max-height:inherit}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px 6px}
+.sheet-head h2{font-size:22px;font-weight:700}
+.sheet-body{overflow:auto;-webkit-overflow-scrolling:touch;min-height:0;padding:10px 18px 18px;display:grid;gap:20px;align-content:start}
+.sheet-foot{display:flex;gap:10px;padding:12px 18px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--surface)}
+
+.field{display:grid;gap:10px;border:0;padding:0;margin:0;min-width:0}
+.field>label,.field>legend{font-weight:700;font-size:16px;padding:0}
+.field .opt-note{font-weight:500;font-size:14px;color:var(--ink-2)}
+input[type=text],input[type=number],input[type=date],input[type=time],textarea{width:100%;min-height:50px;padding:10px 14px;border-radius:14px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:16px}
+textarea{min-height:88px;resize:vertical}
+input:focus-visible,textarea:focus-visible{outline:3px solid color-mix(in srgb,var(--accent) 40%,transparent);outline-offset:0;border-color:var(--accent)}
+.with-suffix{display:flex;align-items:center;gap:10px}
+.with-suffix span{color:var(--ink-2);font-weight:600;white-space:nowrap}
+.chipset{display:flex;flex-wrap:wrap;gap:8px}
+.opt{position:relative;display:inline-flex}
+.opt input{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.opt span{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid var(--line);background:var(--bg);font-weight:600;font-size:15px}
+.opt input:checked+span{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.opt input:focus-visible+span{outline:3px solid var(--accent);outline-offset:2px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;background:hsl(var(--h) 62% var(--bar-l))}
+.dur{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.dur-in{display:flex;align-items:center;gap:8px}
+.dur-in input{width:84px;text-align:center}
+.dur-in span{font-weight:600;color:var(--ink-2)}
+.earn{margin-left:auto;font-family:var(--font-display);font-weight:700;font-size:22px}
+.quick{display:flex;flex-wrap:wrap;gap:8px}
+.quick button{min-height:40px;padding:0 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--bg);font-weight:600;font-size:14px}
+.pthumbs{display:flex;flex-wrap:wrap;gap:10px}
+.pthumb{position:relative;width:84px;height:84px;border-radius:14px;overflow:hidden;background:var(--surface-2);border:1px solid var(--line)}
+.pthumb img{width:100%;height:100%;object-fit:cover;display:block}
+.pthumb .x{position:absolute;top:4px;right:4px;width:30px;height:30px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;display:grid;place-items:center;padding:0}
+.pthumb .x svg{width:16px;height:16px}
+.pthumb.busy{display:grid;place-items:center}
+.spin{width:24px;height:24px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--accent);animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.photo-btn{position:relative;cursor:pointer;justify-self:start}
+.photo-btn input{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.photo-btn:focus-within{outline:3px solid var(--accent);outline-offset:2px}
+.photo-btn.off{opacity:.5;pointer-events:none}
+.err{padding:10px 14px;border-radius:12px;background:var(--danger-soft);color:var(--danger);font-weight:600;font-size:14px}
+
+/* photo viewer */
+.dlg.lb{background:#05090B;color:#fff;border-radius:22px;width:min(900px,100%);margin:auto}
+.lb-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px 4px}
+.lb-head .count{font-size:14px;color:#BCD0D5}
+.lb-head .iconbtn,.lb-nav .iconbtn{background:#16242A;border-color:#2B3F46;color:#fff}
+.lb-stage{position:relative;display:grid;place-items:center;flex:1;min-height:200px;padding:6px 10px}
+.lb-stage img{max-width:100%;max-height:68vh;max-height:68dvh;object-fit:contain;border-radius:12px;display:block}
+.lb-stage img.blur{filter:blur(5px)}
+.lb-msg{position:absolute;left:0;right:0;bottom:12px;text-align:center;font-size:14px;color:#D5E4E8}
+.lb-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 14px 14px}
+.lb-cap{flex:1;text-align:center;font-size:14px;color:#D5E4E8;min-width:0;overflow-wrap:anywhere}
+
+.toast{position:fixed;left:50%;bottom:86px;transform:translate(-50%,12px);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:999px;font-weight:600;font-size:15px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60;max-width:calc(100% - 32px);text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* schedule (graafik) */
+.nav .badge{position:absolute;top:5px;left:calc(50% + 7px);min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--danger);color:var(--bg);font-size:11px;font-weight:700;font-style:normal;display:grid;place-items:center;line-height:1}
+.plan-add{width:100%}
+.entry.plan .when{font-weight:700;color:var(--ink)}
+.entry.plan .when.late{color:var(--danger)}
+.entry.plan.done h3{text-decoration:line-through;color:var(--ink-2)}
+.rep{display:inline-flex;align-items:center;gap:4px}
+.rep svg{width:14px;height:14px}
+.day-head.late h2{color:var(--danger)}
+.when-row{display:flex;gap:10px}
+.when-row input{flex:1;min-width:0}
+.plan-note{padding:10px 14px;border-radius:14px;background:var(--accent-soft);color:var(--accent);font-weight:600;font-size:14px}
+.donebox{border:1px solid var(--line);border-radius:20px;background:var(--surface);overflow:hidden}
+.donebox>summary{padding:14px 16px;font-weight:700;cursor:pointer;list-style:none}
+.donebox>summary::-webkit-details-marker{display:none}
+.donebox[open]>summary{border-bottom:1px solid var(--line)}
+.donebox .entries{border:0;border-radius:0}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<header id="top" class="top"></header>
+<main id="view"></main>
+<nav id="nav" class="nav" aria-label="Põhimenüü"></nav>
+<div class="dlg-wrap" hidden><div class="dlg" id="entry-dialog" role="dialog" aria-modal="true" aria-label="Töö" tabindex="-1"></div></div>
+<div class="dlg-wrap" hidden><div class="dlg" id="form-dialog" role="dialog" aria-modal="true" aria-label="Muuda" tabindex="-1"></div></div>
+<div class="dlg-wrap" hidden><div class="dlg" id="confirm-dialog" role="alertdialog" aria-modal="true" aria-label="Kinnita" tabindex="-1"></div></div>
+<div class="dlg-wrap" hidden><div class="dlg lb" id="photo-dialog" role="dialog" aria-modal="true" aria-label="Pilt" tabindex="-1"></div></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script src="firebase-config.js"></script>
+<script>
+/* ===== Pere kodutööd: Firebase'i ühendus =====
+   Annab lehele sama väikese andmebaasi-liidese, mida ta Claude'is kasutas (doc, collection, get, set, update,
+   delete, add, onSnapshot). Andmed on Firestore'is aadressi f/<pere kood>/... all.
+   Pere kood on pikk juhuslik tekst, mis asub ainult pere linkides ja telefonide mälus (mitte selles failis). */
+(function () {
+  'use strict';
+  const CFG = window.KT_CONFIG || {};
+  const FB = CFG.firebase || {};
+  const SDK = 'https://www.gstatic.com/firebasejs/13.4.0/';
+  const ACK_MS = typeof CFG.ackMs === 'number' && CFG.ackMs >= 0 ? CFG.ackMs : 8000;
+  const KEY = 'kt-fam';
+  const ALPHA = 'abcdefghjkmnpqrstuvwxyz23456789';      // ilma segadust tekitavate märkideta (i, l, o, 0, 1)
+
+  const missing = v => typeof v !== 'string' || !v.trim() || /KLEBI|PASTE|XXXX/i.test(v);
+  const configured = !missing(FB.apiKey) && !missing(FB.projectId);
+
+  /* ---------- pere kood ---------- */
+  let memCode = '';
+  const fmt = c => c.match(/.{1,5}/g).join('-');
+  const norm = s => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  function parseCode(raw) {                                // võtab koodi ka terve lingi seest
+    let s = String(raw || '').trim();
+    const m = /[#?&]k=([^&\s]+)/i.exec(s);
+    if (m) { try { s = decodeURIComponent(m[1]); } catch (_) { s = m[1]; } }
+    const c = norm(s);
+    return c.length >= 16 && c.length <= 40 ? fmt(c) : '';
+  }
+  function newCode() {
+    const out = [];
+    const buf = new Uint8Array(64);
+    while (out.length < 20) {
+      crypto.getRandomValues(buf);
+      for (let i = 0; i < buf.length && out.length < 20; i++) if (buf[i] < 248) out.push(ALPHA[buf[i] % 31]);
+    }
+    return fmt(out.join(''));
+  }
+  function getCode() {
+    let c = '';
+    try { c = localStorage.getItem(KEY) || ''; } catch (_) { /* ignore */ }
+    if (!c) { try { c = sessionStorage.getItem(KEY) || ''; } catch (_) { /* ignore */ } }
+    return c || memCode;
+  }
+  function setCode(c) {
+    memCode = c;
+    try { localStorage.setItem(KEY, c); } catch (_) { /* ignore */ }
+    try { sessionStorage.setItem(KEY, c); } catch (_) { /* ignore */ }
+  }
+  function clearCode() {
+    memCode = '';
+    try { localStorage.removeItem(KEY); } catch (_) { /* ignore */ }
+    try { sessionStorage.removeItem(KEY); } catch (_) { /* ignore */ }
+    syncUrl();
+  }
+  const wantsNew = () => /(^|[#&])uus(&|$)/.test(location.hash || '');
+  /* Hoiab pere koodi aadressiribal (#k=<kood>). Nii töötab ka järjehoidja, avaekraani ikoon ja sama link
+     teises brauseris (näiteks WhatsAppi sisseehitatud brauser): igaühel on oma mälu, aga link toob koodi kaasa.
+     Kui koodi pole, eemaldab aadressist vana #k=… (muud, näiteks #uus, jäävad). */
+  function syncUrl() {
+    const c = getCode(), h = location.hash || '';
+    const want = c ? '#k=' + c : '';
+    if (c ? h === want : !/(^|[#&])k=/.test(h)) return;
+    try { history.replaceState(null, '', location.href.split('#')[0] + want); } catch (_) { /* ignore */ }
+  }
+  /* link kujul ...#k=<kood>: salvestab koodi ja viib aadressi ühtsesse kujule. Vigane link puhastatakse. */
+  function takeFromUrl() {
+    const h = location.hash || '';
+    if (!/(^|[#&])k=/.test(h)) return '';
+    const c = parseCode(h);
+    if (!c) {
+      try { history.replaceState(null, '', location.href.split('#')[0]); } catch (_) { /* ignore */ }
+      return 'bad';
+    }
+    setCode(c);
+    syncUrl();
+    return 'ok';
+  }
+  const linkFor = c => location.href.split('#')[0].split('?')[0] + '#k=' + c;
+
+  /* ---------- ootel kirjutamised ---------- */
+  let queued = 0;
+  const KT = {
+    standalone: true, configured, projectId: String(FB.projectId || ''), seed: CFG.seed || {},
+    code: getCode, setCode, clearCode, newCode, parseCode, takeFromUrl, syncUrl, linkFor,
+    wantsNew, queued: () => queued, onWriteError: null,
+    db: null, user: null
+  };
+  const tell = () => { try { window.dispatchEvent(new Event('kt-queued')); } catch (_) { /* ignore */ } };
+  /* Kirjutamine lõpeb, kui server on kinnitanud. Kui kinnitust pole ACK_MS jooksul (internet kadunud),
+     jätkab leht ja Firebase saadab muudatuse hiljem. Hilisest veast antakse teada onWriteError kaudu. */
+  function write(p) {
+    return new Promise((resolve, reject) => {
+      let settled = false, slow = false;
+      const t = setTimeout(() => { if (!settled) { settled = true; slow = true; queued++; tell(); resolve(); } }, ACK_MS);
+      Promise.resolve(p).then(() => {
+        clearTimeout(t);
+        if (slow) { queued = Math.max(0, queued - 1); tell(); }
+        if (!settled) { settled = true; resolve(); }
+      }, err => {
+        clearTimeout(t);
+        if (slow) { queued = Math.max(0, queued - 1); tell(); }
+        if (!settled) { settled = true; reject(err); }
+        else if (typeof KT.onWriteError === 'function') { try { KT.onWriteError(err); } catch (_) { /* ignore */ } }
+      });
+    });
+  }
+
+  /* ---------- Firebase'i laadimine (üks kord) ---------- */
+  function idbOk() {
+    return new Promise(res => {
+      try {
+        if (!window.indexedDB) { res(false); return; }
+        const t = setTimeout(() => res(false), 1500);
+        const r = indexedDB.open('kt-probe');
+        r.onsuccess = () => { clearTimeout(t); try { r.result.close(); } catch (_) { /* ignore */ } res(true); };
+        r.onerror = () => { clearTimeout(t); res(false); };
+        r.onblocked = () => { clearTimeout(t); res(false); };
+      } catch (_) { res(false); }
+    });
+  }
+  let fsPromise = null;
+  function loadFs() {
+    if (fsPromise) return fsPromise;
+    fsPromise = (async () => {
+      let A, M;
+      try { [A, M] = await Promise.all([import(SDK + 'firebase-app.js'), import(SDK + 'firebase-firestore.js')]); }
+      catch (e) { const er = new Error('Firebase\'i skripti ei saanud laadida'); er.code = 'sdk-load'; throw er; }
+      const app = A.initializeApp(FB);
+      let fs = null;
+      if (await idbOk()) {
+        try { fs = M.initializeFirestore(app, { localCache: M.persistentLocalCache({ tabManager: M.persistentMultipleTabManager() }), ignoreUndefinedProperties: true }); }
+        catch (_) { fs = null; }
+      }
+      if (!fs) { try { fs = M.initializeFirestore(app, { ignoreUndefinedProperties: true }); } catch (_) { fs = M.getFirestore(app); } }
+      return { M, fs };
+    })();
+    fsPromise.catch(() => { fsPromise = null; });
+    return fsPromise;
+  }
+
+  /* ---------- liides, mida leht kasutab ---------- */
+  const clean = d => JSON.parse(JSON.stringify(d));
+  const docSnap = s => ({ id: s.id, exists: s.exists(), data: () => s.data(), metadata: s.metadata });
+  const qSnap = s => ({
+    docs: s.docs.map(d => ({ id: d.id, exists: true, data: () => d.data(), metadata: d.metadata })),
+    size: s.size, empty: s.empty, docChanges: () => [], metadata: s.metadata
+  });
+  const LIVE = { includeMetadataChanges: true };
+
+  function makeApi(M, fs, base) {
+    const wrapDoc = ref => ({
+      id: ref.id, path: ref.path,
+      get: async () => docSnap(await M.getDoc(ref)),
+      set: d => write(M.setDoc(ref, clean(d))),
+      update: d => write(M.updateDoc(ref, clean(d))),
+      delete: () => write(M.deleteDoc(ref)),
+      onSnapshot: (next, err) => M.onSnapshot(ref, LIVE, s => next(docSnap(s)), e => { if (err) err(e); }),
+      collection: p => wrapCol(M.collection(ref, p))
+    });
+    const wrapCol = ref => ({
+      path: ref.path,
+      doc: id => wrapDoc(id ? M.doc(ref, id) : M.doc(ref)),
+      add: async d => { const r = M.doc(ref); await write(M.setDoc(r, clean(d))); return wrapDoc(r); },
+      get: async () => qSnap(await M.getDocs(ref)),
+      onSnapshot: (next, err) => M.onSnapshot(ref, LIVE, s => next(qSnap(s)), e => { if (err) err(e); })
+    });
+    return {
+      doc: p => wrapDoc(M.doc(fs, base + '/' + p)),
+      collection: p => wrapCol(M.collection(fs, base + '/' + p)),
+      batch: () => {                                       // kõik või mitte midagi
+        const b = M.writeBatch(fs);
+        const api = { set: (p, d) => { b.set(M.doc(fs, base + '/' + p), clean(d)); return api; }, commit: () => write(b.commit()) };
+        return api;
+      }
+    };
+  }
+
+  KT.db = async function () {
+    const code = getCode();
+    if (!code) { const e = new Error('Pere koodi pole'); e.code = 'no-code'; throw e; }
+    const o = await loadFs();
+    return makeApi(o.M, o.fs, 'f/' + code);
+  };
+  KT.user = {
+    isOwner: async () => false, canEdit: async () => true, can: async () => true,
+    id: async () => 'device', me: async () => ({ id: 'device', name: '', isOwner: false, canEdit: true })
+  };
+  window.KT = KT;
+})();
+</script>
+<script>
+(function () {
+'use strict';
+const KT = window.KT || null;
+const standalone = !!(KT && KT.standalone);
+
+/* ================= helpers ================= */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const pad = n => String(n).padStart(2, '0');
+const NB = ' ';
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const r2 = x => Math.round((x || 0) * 100) / 100;
+const num = (v, d) => (typeof v === 'number' && isFinite(v) && v >= 0 ? v : d);
+const initial = n => (String(n || '?').trim().charAt(0) || '?').toUpperCase();
+const safeImg = t => typeof t === 'string' && t.length < 260000 && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(t);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+const MONTHS = ['jaanuar', 'veebruar', 'märts', 'aprill', 'mai', 'juuni', 'juuli', 'august', 'september', 'oktoober', 'november', 'detsember'];
+const MONTHS_SHORT = ['jaan', 'veebr', 'märts', 'apr', 'mai', 'juuni', 'juuli', 'aug', 'sept', 'okt', 'nov', 'dets'];
+const WEEKDAYS = ['pühapäev', 'esmaspäev', 'teisipäev', 'kolmapäev', 'neljapäev', 'reede', 'laupäev'];
+
+function thisYm() { const d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1); }
+function ymd(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+function todayStr() { return ymd(new Date()); }
+function yesterdayStr() { const d = new Date(); d.setDate(d.getDate() - 1); return ymd(d); }
+function addDays(ds, n) { const t = parseYmd(ds); return ymd(new Date(t.y, t.m - 1, t.d + n)); }
+function tomorrowStr() { return addDays(todayStr(), 1); }
+const REPEATS = [['', 'Ainult üks kord'], ['daily', 'Iga päev'], ['weekly', 'Iga nädal'], ['biweekly', 'Iga 2 nädala tagant']];
+const REP_DAYS = { daily: 1, weekly: 7, biweekly: 14 };
+const repLabel = r => { const x = REPEATS.find(y => y[0] === r); return x ? x[1] : ''; };
+/* next due date of a repeating job once it was done on doneDate: always a later day than doneDate */
+function nextDue(due, repeat, doneDate) {
+  const step = REP_DAYS[repeat];
+  if (!step) return due;
+  let d = addDays(due, step), guard = 0;
+  while (d <= doneDate && guard++ < 2000) d = addDays(d, step);
+  return d;
+}
+function ymOf(ds) { return String(ds).slice(0, 7); }
+function parseYmd(ds) { const p = String(ds).split('-').map(Number); return { y: p[0], m: p[1], d: p[2] }; }
+function fmtMonth(ym) { const p = ym.split('-').map(Number); return MONTHS[p[1] - 1] + ' ' + p[0]; }
+function fmtDay(ds) {
+  const t = parseYmd(ds), base = t.d + '. ' + MONTHS[t.m - 1];
+  if (ds === todayStr()) return 'Täna, ' + base;
+  if (ds === yesterdayStr()) return 'Eile, ' + base;
+  if (ds === tomorrowStr()) return 'Homme, ' + base;
+  return cap(WEEKDAYS[new Date(t.y, t.m - 1, t.d).getDay()]) + ', ' + base;
+}
+function fmtShort(ds) { const t = parseYmd(ds); return t.d + '. ' + MONTHS_SHORT[t.m - 1]; }
+function shiftMonth(ym, delta) {
+  let p = ym.split('-').map(Number), y = p[0], m = p[1] + delta;
+  while (m > 12) { m -= 12; y++; }
+  while (m < 1) { m += 12; y--; }
+  return y + '-' + pad(m);
+}
+function eur(n) {
+  n = Math.round((n || 0) * 100) / 100;
+  const neg = n < 0; n = Math.abs(n);
+  const whole = Math.floor(n + 1e-9), cents = Math.round((n - whole) * 100);
+  const w = String(whole).replace(/\B(?=(\d{3})+(?!\d))/g, NB);
+  return (neg ? '−' : '') + w + (cents ? ',' + pad(cents) : '') + NB + '€';
+}
+function fmtDur(min) {
+  min = Math.max(0, Math.round(min || 0));
+  const h = Math.floor(min / 60), m = min % 60;
+  if (!h) return m + NB + 'min';
+  if (!m) return h + NB + 'h';
+  return h + NB + 'h' + NB + m + NB + 'min';
+}
+function parseNum(s) {
+  const v = parseFloat(String(s).replace(',', '.').replace(/\s/g, ''));
+  return isFinite(v) && v >= 0 && v < 1e7 ? Math.round(v * 100) / 100 : null;
+}
+function withTimeout(p, ms) {
+  return new Promise((res, rej) => {
+    const t = setTimeout(() => rej({ code: 'timeout' }), ms);
+    Promise.resolve(p).then(v => { clearTimeout(t); res(v); }, e => { clearTimeout(t); rej(e); });
+  });
+}
+const BUILD = '2026-11-23-fb1';
+function errMsg(e, scope) {
+  const c = e && e.code;
+  try { S.lastErr = (c || 'viga') + (e && e.message ? ': ' + String(e.message).slice(0, 140) : ''); } catch (_) { /* ignore */ }
+  if (standalone) { const fm = fbErrMsg(c); if (fm) return fm; }
+  if (c === 'timeout') return 'Ühendus on aeglane. Kontrolli internetti ja proovi uuesti.';
+  if (c === 'quota_exceeded') return 'Andmebaasis on ruum täis. Kustuta vanu töid või pilte.';
+  if (c === 'resource_exhausted') return 'Päringuid on liiga palju. Oota hetk ja proovi uuesti.';
+  if (c === 'invalid_argument') return scope === 'config'
+    ? 'Seda ei õnnestunud salvestada. Seadeid saab muuta ainult lehe omanik, kes on oma Claude\'i kontoga sisse logitud.'
+    : scope === 'plan'
+      ? 'Salvestamine ei õnnestunud. Sul võib puududa muutmisõigus.'
+      : 'Salvestamine ei õnnestunud. Sul võib puududa muutmisõigus või pilt on liiga suur.';
+  if (c === 'revoked' || c === 'not_granted') return 'Ligipääs on lõppenud. Ava leht uuesti.';
+  return 'Midagi läks valesti. Proovi uuesti.' + (c ? ' (' + c + ')' : '');
+}
+function lastMe() { try { return localStorage.getItem('kt-me') || ''; } catch (_) { return ''; } }
+function saveMe(id) { try { localStorage.setItem('kt-me', id); } catch (_) { /* ignore */ } }
+
+const svg = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const ICON = {
+  plus: svg('<path d="M12 5v14M5 12h14"/>'),
+  left: svg('<path d="M15 5l-7 7 7 7"/>'),
+  right: svg('<path d="M9 5l7 7-7 7"/>'),
+  close: svg('<path d="M6 6l12 12M18 6L6 18"/>'),
+  camera: svg('<path d="M4 8.5h3.2l1.6-2.3h6.4l1.6 2.3H20v10.5H4z"/><circle cx="12" cy="13.5" r="3.4"/>'),
+  edit: svg('<path d="M4 20l1-4.5L16.5 4a2.1 2.1 0 013 3L8 18.5z"/><path d="M14.5 6l3.5 3.5"/>'),
+  trash: svg('<path d="M5 7h14"/><path d="M9.5 7V4.8h5V7"/><path d="M7 7l.8 12.2h8.4L17 7"/>'),
+  overview: svg('<rect x="3.5" y="3.5" width="7" height="9" rx="1.8"/><rect x="13.5" y="3.5" width="7" height="5.5" rx="1.8"/><rect x="13.5" y="12.5" width="7" height="8" rx="1.8"/><rect x="3.5" y="16" width="7" height="4.5" rx="1.8"/>'),
+  list: svg('<path d="M9 6.5h11M9 12h11M9 17.5h11"/><circle cx="4.8" cy="6.5" r=".6"/><circle cx="4.8" cy="12" r=".6"/><circle cx="4.8" cy="17.5" r=".6"/>'),
+  sliders: svg('<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>'),
+  cal: svg('<rect x="3.5" y="5" width="17" height="15.5" rx="2.4"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M8 14h2M14 14h2M8 17.2h2"/>'),
+  repeat: svg('<path d="M17 3l3 3-3 3"/><path d="M4 11V9.5A3.5 3.5 0 017.5 6H20"/><path d="M7 21l-3-3 3-3"/><path d="M20 13v1.5a3.5 3.5 0 01-3.5 3.5H4"/>')
+};
+
+/* ================= state ================= */
+const HUES = [205, 25, 145, 285, 340, 50, 175, 250, 95, 5];
+const DEFAULT_PEOPLE = 8;
+const MAX_PHOTOS = 4;
+const OTHER = '__other';
+
+const S = {
+  db: null, user: null, booted: false, gate: '', gateErr: '', dbErr: null, cfgExists: true,
+  env: { forms: null }, isOwner: false, canEditLvl: false, canWrite: null, lastErr: '', me: '', askedIdentity: false, idTimer: 0,
+  cfg: { monthlyCost: 2000, hourlyRate: 10 },
+  members: [], tasks: [], ptasks: [], monthDocs: {}, entries: [], entriesYm: '',
+  got: {}, confirmed: {}, slow: false, err: '', deleting: new Set(), plan: [], pfilter: 'all',
+  ym: thisYm(), tab: 'overview', filter: 'all'
+};
+let F = null;      // entry form state
+let P = null;      // schedule form state
+let L = null;      // lightbox state
+let entriesUnsub = null, slowTimer = null;
+const photoCache = new Map();
+
+const isActive = m => m.active !== false;
+const activeMembers = () => S.members.filter(isActive);
+const memberById = id => S.members.find(m => m.id === id) || null;
+const hueOf = m => HUES[((m && typeof m.c === 'number' ? m.c : 0) % HUES.length + HUES.length) % HUES.length];
+const rateOf = e => num(e.rate, S.cfg.hourlyRate);
+const earnOf = e => (e.minutes || 0) / 60 * rateOf(e);
+const monthDoc = ym => S.monthDocs[ym] || null;
+const monthCost = ym => { const d = monthDoc(ym); return d && typeof d.cost === 'number' ? d.cost : S.cfg.monthlyCost; };
+const peopleFor = ym => { const d = monthDoc(ym); return d && typeof d.people === 'number' && d.people >= 1 ? Math.floor(d.people) : (activeMembers().length || DEFAULT_PEOPLE); };
+/* standalone: no page owner exists, so admins decide; while nobody is admin yet, everybody may (so the family can never be locked out) */
+const noAdmin = () => standalone && !!S.got.members && !S.members.some(m => isActive(m) && m.admin === true);
+const canConfig = () => standalone ? (!!S.db && (meAdmin() || noAdmin())) : (S.isOwner || !S.user || (S.canEditLvl && S.got.members && !S.members.length));
+const canLog = () => !!S.db && S.canWrite !== false && activeMembers().length > 0;
+const meMember = () => { const m = S.me && S.me !== '-' ? memberById(S.me) : null; return m && isActive(m) ? m : null; };
+/* admin = the page owner, or a family member whose card has admin switched on (the phone's chosen name decides) */
+const meAdmin = () => { const m = meMember(); return !!(m && m.admin === true); };
+const isAdmin = () => !!S.db && S.canWrite !== false && (standalone ? (meAdmin() || noAdmin()) : (S.isOwner || !S.user || meAdmin()));
+const canEditEntry = e => !!S.db && S.canWrite !== false && (standalone
+  ? (meAdmin() || noAdmin() || (!!meMember() && (e.by === S.me || e.memberId === S.me)))
+  : (S.isOwner || !S.user || !meMember() || meAdmin() || e.by === S.me || e.memberId === S.me));
+const planSort = (a, b) => String(a.due || '').localeCompare(String(b.due || '')) || String(a.time || '').localeCompare(String(b.time || '')) || (a.createdAt || 0) - (b.createdAt || 0);
+const canDonePlan = p => !!S.db && S.canWrite !== false && (isAdmin() || (standalone ? (!!meMember() && p.memberId === S.me) : (!meMember() || p.memberId === S.me)));
+/* how many open jobs of this phone's person are due today or already late */
+const myDueCount = () => { const me = meMember(); if (!me) return 0; const t = todayStr(); return S.plan.filter(p => p.status !== 'done' && p.memberId === me.id && String(p.due || '') <= t).length; };
+const lower = s => String(s == null ? '' : s).toLowerCase();
+const byName = (a, b) => lower(a.name).localeCompare(lower(b.name), 'et');
+const sortedEntries = () => S.entries.slice().sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')) || (b.createdAt || 0) - (a.createdAt || 0));
+
+function memberStats() {
+  const out = new Map();
+  activeMembers().forEach(m => out.set(m.id, { minutes: 0, earned: 0 }));
+  if (S.entriesYm === S.ym) {
+    S.entries.forEach(e => {
+      const s = out.get(e.memberId);
+      if (s) { s.minutes += e.minutes || 0; s.earned += earnOf(e); }
+    });
+  }
+  return out;
+}
+
+/* ================= data ================= */
+function allConfirmed() { return ['cfg', 'members', 'tasks', 'months', 'ptasks', 'plan', 'entries'].every(k => S.confirmed[k]); }
+function confirm1(key, snap) {
+  if (snap && snap.metadata && !snap.metadata.fromCache) S.confirmed[key] = true;
+  if (allConfirmed()) { clearTimeout(slowTimer); S.slow = false; }
+}
+function listenError(err) {
+  S.lastErr = ((err && err.code) || 'viga') + (err && err.message ? ': ' + String(err.message).slice(0, 140) : '');
+  S.err = (standalone && fbErrMsg(err && err.code)) || 'Andmete jälgimine katkes. Ava leht uuesti.';
+  render();
+}
+function byOrder(a, b) { return (a.order || 0) - (b.order || 0) || String(a.name || '').localeCompare(String(b.name || ''), 'et'); }
+
+function subscribeAll() {
+  const cfg = S.db.doc('config/main');
+  cfg.onSnapshot(snap => {
+    const d = snap.exists ? snap.data() : {};
+    S.cfgExists = !!snap.exists;
+    S.cfg = { monthlyCost: num(d.monthlyCost, 2000), hourlyRate: num(d.hourlyRate, 10) };
+    S.got.cfg = true; confirm1('cfg', snap); render();
+  }, listenError);
+  cfg.collection('members').onSnapshot(snap => {
+    S.members = snap.docs.map(d => Object.assign({ id: d.id }, d.data())).sort(byOrder);
+    S.got.members = true; confirm1('members', snap); render(); maybeAskIdentity();
+  }, listenError);
+  cfg.collection('tasks').onSnapshot(snap => {
+    S.tasks = snap.docs.map(d => Object.assign({ id: d.id }, d.data())).sort(byOrder);
+    S.got.tasks = true; confirm1('tasks', snap); render();
+  }, listenError);
+  cfg.collection('months').onSnapshot(snap => {
+    const o = {}; snap.docs.forEach(d => { o[d.id] = d.data(); });
+    S.monthDocs = o;
+    S.got.months = true; confirm1('months', snap); render();
+  }, listenError);
+  S.db.collection('ptasks').onSnapshot(snap => {
+    S.ptasks = snap.docs.map(d => Object.assign({ id: d.id }, d.data()));
+    S.got.ptasks = true; confirm1('ptasks', snap); render();
+  }, listenError);
+  S.db.collection('plan').onSnapshot(snap => {
+    S.plan = snap.docs.map(d => Object.assign({ id: d.id }, d.data()));
+    S.got.plan = true; confirm1('plan', snap); render();
+  }, listenError);
+  subscribeEntries(S.ym);
+}
+
+function subscribeEntries(ym) {
+  if (entriesUnsub) { try { entriesUnsub(); } catch (_) { /* ignore */ } entriesUnsub = null; }
+  S.entries = []; S.entriesYm = ym; S.got.entries = false; S.confirmed.entries = false;
+  render();
+  entriesUnsub = S.db.collection('log/' + ym + '/entries').onSnapshot(snap => {
+    if (S.entriesYm !== ym) return;
+    S.entries = snap.docs.map(d => Object.assign({ id: d.id }, d.data()));
+    S.got.entries = true; confirm1('entries', snap); render();
+  }, listenError);
+}
+
+function setMonth(ym) {
+  if (ym === S.ym && S.entriesYm === ym) return;
+  S.ym = ym;
+  if (S.db) subscribeEntries(ym); else render();
+}
+
+function screenInfo() {
+  try {
+    const vv = window.visualViewport;
+    const m = /(iPhone OS|CPU OS|Android) [\d_.]+/.exec(navigator.userAgent || '');
+    return window.innerWidth + '×' + window.innerHeight + (vv ? ' (nähtav ' + Math.round(vv.height) + ')' : '') + (m ? ', ' + m[0].replace(/_/g, '.') : '');
+  } catch (_) { return 'teadmata'; }
+}
+
+function probeEnv() {
+  try {
+    const f = document.createElement('form');
+    f.style.display = 'none';
+    f.addEventListener('submit', e => { e.preventDefault(); S.env.forms = true; });
+    document.body.appendChild(f);
+    const can = typeof f.requestSubmit === 'function';
+    if (can) f.requestSubmit();
+    setTimeout(() => { if (can && S.env.forms === null) S.env.forms = false; f.remove(); if (S.tab === 'settings') render(); }, 400);
+  } catch (_) { /* ignore */ }
+}
+
+async function boot() {
+  S.me = lastMe();
+  render();
+  probeEnv();
+  if (standalone) { await bootStandalone(); return; }
+  const hasClaude = typeof claude !== 'undefined' && claude && typeof claude.use === 'function';
+  if (hasClaude) {
+    const r = await Promise.all([
+      claude.use('user').catch(() => null),
+      claude.use('db').catch(() => null)
+    ]);
+    S.user = r[0]; S.db = r[1];
+  }
+  S.booted = true;
+  if (S.user) {
+    try { S.isOwner = !!(await S.user.isOwner()); } catch (_) { S.isOwner = false; }
+    try { S.canEditLvl = !!(await S.user.canEdit()); } catch (_) { S.canEditLvl = false; }
+    try { S.canWrite = await S.user.can('data.write'); } catch (_) { S.canWrite = null; }
+  }
+  render();
+  if (!S.db) return;
+  slowTimer = setTimeout(() => { if (!allConfirmed()) { S.slow = true; render(); } }, 10000);
+  subscribeAll();
+}
+
+/* ================= views ================= */
+function render() {
+  if (standalone && S.gate) { renderGate(); return; }
+  renderTop();
+  let out;
+  try {
+    out = S.tab === 'overview' ? viewOverview() : S.tab === 'plan' ? viewPlan() : S.tab === 'log' ? viewLog() : viewSettings();
+  } catch (err) {
+    S.lastErr = 'js: ' + String((err && err.message) || err).slice(0, 160);
+    out = '<p class="banner danger">Selle vaate näitamisel tekkis viga. Proovi teist vaadet või ava leht uuesti.</p>';
+  }
+  $('#view').innerHTML = out;
+  renderNav();
+}
+
+function renderTop() {
+  const cur = thisYm();
+  const showMonth = S.tab === 'overview' || S.tab === 'log';
+  $('#top').innerHTML = `<div class="top-in">
+    <div class="brand-row">
+      <h1 class="brand">Pere kodutööd</h1>
+      ${canLog() ? `<button type="button" class="btn btn-primary" data-act="add">${ICON.plus}<span>Lisa töö</span></button>` : ''}
+    </div>
+    ${showMonth ? `<div class="monthbar">
+      <button type="button" class="iconbtn" data-act="month-prev" aria-label="Eelmine kuu">${ICON.left}</button>
+      <div class="monthlabel"><strong>${esc(cap(fmtMonth(S.ym)))}</strong>${S.ym !== cur ? '<button type="button" class="link" data-act="month-now">Tänane kuu</button>' : ''}</div>
+      <button type="button" class="iconbtn" data-act="month-next" aria-label="Järgmine kuu"${S.ym >= cur ? ' disabled' : ''}>${ICON.right}</button>
+    </div>` : ''}
+  </div>`;
+}
+
+function renderNav() {
+  const items = [['overview', 'Ülevaade', ICON.overview], ['plan', 'Graafik', ICON.cal], ['log', 'Logi', ICON.list], ['settings', 'Seaded', ICON.sliders]];
+  const due = myDueCount();
+  $('#nav').innerHTML = `<div class="nav-in">${items.map(it => `<button type="button" data-act="tab" data-tab="${it[0]}"${S.tab === it[0] ? ' aria-current="page"' : ''}${it[0] === 'plan' && due ? ` aria-label="Graafik, ${due} tegemata"` : ''}>${it[2]}<span>${it[1]}</span>${it[0] === 'plan' && due ? `<i class="badge" aria-hidden="true">${due}</i>` : ''}</button>`).join('')}</div>`;
+}
+
+function banners() {
+  let h = '';
+  if (S.booted && !S.db) h += standalone
+    ? `<p class="banner warn">${esc(fbErrMsg(S.dbErr && S.dbErr.code) || 'Andmeid ei saa praegu laadida. Kontrolli internetti ja ava leht uuesti.')}</p>`
+    : '<p class="banner warn">Andmeid ei saa praegu laadida. Ava leht Claude\'is, logi sisse ja proovi uuesti.</p>';
+  if (standalone && S.db && KT.queued() > 0) h += '<p class="banner warn">Mõni muudatus ootab ühendust. Hoia leht lahti, kuni see on saadetud.</p>';
+  if (standalone && S.db && allConfirmed() && !S.cfgExists && !S.members.length && !S.tasks.length) h += '<p class="banner warn">Selle pere koodiga pole andmeid. Kas link või kood on õige? <button type="button" class="link" data-act="fam-change">Vaheta pere</button></p>';
+  if (S.slow) h += '<p class="banner warn">Ühendus on aeglane. Andmed ilmuvad siia, kui need kohale jõuavad.</p>';
+  if (S.err) h += `<p class="banner danger">${esc(S.err)}</p>`;
+  if (S.canWrite === false) h += '<p class="banner">Sul on ainult vaatamisõigus. Tööde lisamiseks palu omanikul anda sulle muutmisõigus.</p>';
+  return h;
+}
+
+function entryRow(e, showDate) {
+  const m = memberById(e.memberId);
+  const name = m ? m.name : (e.memberName || 'Endine pereliige');
+  const hue = m ? hueOf(m) : HUES[0];
+  const thumbs = (e.thumbs || []).map((t, i) => safeImg(t)
+    ? `<button type="button" class="thumb" data-act="photo" data-entry="${esc(e.id)}" data-i="${i}" aria-label="Ava pilt ${i + 1}"><img src="${t}" alt=""></button>` : '').join('');
+  return `<article class="entry" style="--h:${hue}">
+    <div class="avatar" aria-hidden="true">${esc(initial(name))}</div>
+    <div>
+      <h3>${esc(e.taskName || 'Töö')}</h3>
+      <p class="meta"><span>${esc(name)}</span>${showDate ? `<span>${esc(fmtShort(e.date))}</span>` : ''}</p>
+      ${e.note ? `<p class="note">${esc(e.note)}</p>` : ''}
+      ${thumbs ? `<div class="thumbs">${thumbs}</div>` : ''}
+    </div>
+    <div class="entry-side">
+      <p class="dur num">${esc(fmtDur(e.minutes))}</p>
+      <p class="pay num">${esc(eur(earnOf(e)))}</p>
+      ${canEditEntry(e) ? `<div class="entry-acts"><button type="button" class="mini" data-act="edit-entry" data-id="${esc(e.id)}" aria-label="Muuda tööd: ${esc(e.taskName || '')}">${ICON.edit}</button><button type="button" class="mini danger" data-act="del-entry" data-id="${esc(e.id)}" aria-label="Kustuta töö: ${esc(e.taskName || '')}">${ICON.trash}</button></div>` : ''}
+    </div>
+  </article>`;
+}
+
+function personCard(m, s, share) {
+  const rem = r2(share - s.earned), over = r2(s.earned - share);
+  const pct = share > 0 ? Math.min(100, s.earned / share * 100) : 100;
+  const status = rem > 0
+    ? `<span class="pill warn">Maksta veel ${esc(eur(rem))}</span>`
+    : `<span class="pill good">Osa kaetud${over > 0 ? ' · ülejääk ' + esc(eur(over)) : ''}</span>`;
+  return `<article class="person" style="--h:${hueOf(m)}">
+    <div class="person-head">
+      <div class="avatar" aria-hidden="true">${esc(initial(m.name))}</div>
+      <button type="button" class="person-name" data-act="filter-member" data-id="${esc(m.id)}">${esc(m.name)}${m.id === S.me ? '<span class="me-tag">Sina</span>' : ''}<small class="num">${esc(fmtDur(s.minutes))} tööd</small></button>
+      <div class="person-earn num">${esc(eur(s.earned))}<small>osast ${esc(eur(share))}</small></div>
+    </div>
+    <div class="bar" role="img" aria-label="${esc(m.name)}: ${Math.round(pct)}% osast kaetud"><i style="width:${pct.toFixed(1)}%"></i></div>
+    <div class="status">${status}${canLog() ? `<button type="button" class="btn btn-small" data-act="add" data-member="${esc(m.id)}">${ICON.plus}<span>Lisa töö</span></button>` : ''}</div>
+  </article>`;
+}
+
+function viewOverview() {
+  const cost = monthCost(S.ym), n = peopleFor(S.ym), share = cost / n, rate = S.cfg.hourlyRate;
+  const act = activeMembers(), st = memberStats();
+  let totMin = 0, totEarn = 0;
+  act.forEach(m => { const s = st.get(m.id); totMin += s.minutes; totEarn += s.earned; });
+  const pct = cost > 0 ? Math.min(100, Math.round(totEarn / cost * 100)) : 0;
+  const segs = act.map(m => {
+    const s = st.get(m.id), w = cost > 0 ? Math.min(100, s.earned / cost * 100) : 0;
+    return w > 0 ? `<i style="--h:${hueOf(m)};width:${w.toFixed(2)}%" title="${esc(m.name)}: ${esc(eur(s.earned))}"></i>` : '';
+  }).join('');
+  const needMin = rate > 0 ? Math.round(share / rate * 60) : 0;
+  const md = monthDoc(S.ym);
+  const loadingPeople = S.booted && S.db && !S.got.members;
+  const ordered = act.slice(), mi = ordered.findIndex(m => m.id === S.me);
+  if (mi > 0) ordered.unshift(ordered.splice(mi, 1)[0]);
+
+  let people;
+  if (!S.booted || loadingPeople) people = '<div class="people"><div class="ph"></div><div class="ph"></div></div>';
+  else if (!S.db) people = '';
+  else if (!act.length) {
+    people = canConfig()
+      ? `<section class="card setup"><h2>Alustame pereliikmetest</h2><p>Kirjuta kõigi nimed, siis saab igaüks oma töötunnid märkida. Maja kulud jagatakse nende vahel võrdselt.</p><button type="button" class="btn btn-primary" data-act="add-members">${ICON.plus}<span>Lisa pereliikmed</span></button><p class="muted small">Pärast seda ilmub ülanurka nupp „Lisa töö“. Seal saad märkida töö, aja ja kuupäeva ning lisada pilte.</p></section>`
+      : '<section class="card setup"><h2>Pereliikmeid pole veel</h2><p>Pereliikmeid saab lisada ainult lehe omanik, kes on oma Claude\'i kontoga sisse logitud. Kui sa oled omanik, ava leht Claude\'is oma kontoga, mitte jagatud lingi kaudu.</p></section>';
+  } else {
+    people = `<section><div class="sec-title"><h2>Pereliikmed</h2><span class="muted num">${n} inimest · osa ${esc(eur(share))}</span></div><div class="people">${ordered.map(m => personCard(m, st.get(m.id), share)).join('')}</div></section>`;
+  }
+
+  let recent = '';
+  if (S.db && act.length && S.got.entries) {
+    const list = sortedEntries().slice(0, 5);
+    recent = list.length
+      ? `<section><div class="sec-title"><h2>Viimased tööd</h2><button type="button" class="link" data-act="tab" data-tab="log">Kõik tööd</button></div><div class="entries">${list.map(e => entryRow(e, true)).join('')}</div></section>`
+      : '<p class="empty">Sel kuul pole veel ühtegi tööd. Vajuta „Lisa töö“, seal saad lisada ka pilte.</p>';
+  }
+
+  return `${banners()}
+  <section class="panel" aria-label="Kuu kokkuvõte">
+    <div class="panel-top">
+      <div><p class="eyebrow">Tööga kaetud</p><p class="big num">${esc(eur(totEarn))}</p></div>
+      <p class="pct num">${pct}%<small>kuludest ${esc(eur(cost))}</small></p>
+    </div>
+    <div class="seg" role="img" aria-label="Kulud on tööga kaetud ${pct}% ulatuses">${segs}</div>
+    <dl class="tiles">
+      <div><dt>Kulud</dt><dd class="num">${esc(eur(cost))}</dd><dd class="sub">${md && typeof md.cost === 'number' ? 'selle kuu' : 'kuus'}</dd></div>
+      <div><dt>Ühe inimese osa</dt><dd class="num">${esc(eur(share))}</dd><dd class="sub">${n} inimest${rate > 0 ? ' · ' + esc(fmtDur(needMin)) + ' tööd' : ''}</dd></div>
+      <div><dt>Töötunnid kokku</dt><dd class="num">${esc(fmtDur(totMin))}</dd><dd class="sub">${esc(eur(rate))} tunnis</dd></div>
+    </dl>
+    ${S.db && canConfig() ? `<button type="button" class="panel-link" data-act="edit-month">${ICON.edit}<span>Muuda selle kuu kulusid</span></button>` : ''}
+  </section>
+  ${myPlanCard()}
+  ${people}
+  ${recent}`;
+}
+
+function viewLog() {
+  const act = activeMembers();
+  if (S.filter !== 'all' && !act.some(m => m.id === S.filter)) S.filter = 'all';
+  const ordered = act.slice(), mi = ordered.findIndex(m => m.id === S.me);
+  if (mi > 0) ordered.unshift(ordered.splice(mi, 1)[0]);
+  const chips = [['all', 'Kõik']].concat(ordered.map(m => [m.id, m.id === S.me ? m.name + ' (sina)' : m.name]));
+  let list = sortedEntries();
+  if (S.filter !== 'all') list = list.filter(e => e.memberId === S.filter);
+  let tMin = 0, tEarn = 0;
+  list.forEach(e => { tMin += e.minutes || 0; tEarn += earnOf(e); });
+  const groups = [];
+  list.forEach(e => {
+    let g = groups[groups.length - 1];
+    if (!g || g.date !== e.date) { g = { date: e.date, items: [], min: 0, earn: 0 }; groups.push(g); }
+    g.items.push(e); g.min += e.minutes || 0; g.earn += earnOf(e);
+  });
+  let body;
+  if (!S.booted || (S.db && !S.got.entries)) body = '<div class="ph"></div><div class="ph"></div>';
+  else if (!S.db) body = '';
+  else if (!groups.length) body = '<p class="empty">Sel kuul pole siin ühtegi tööd. Vajuta „Lisa töö“.</p>';
+  else body = groups.map(g => `<section class="day"><div class="day-head"><h2>${esc(fmtDay(g.date))}</h2><span class="num">${esc(fmtDur(g.min))} · ${esc(eur(g.earn))}</span></div><div class="entries">${g.items.map(e => entryRow(e, false)).join('')}</div></section>`).join('');
+  return `${banners()}
+  <div class="filters" role="group" aria-label="Näita pereliiget">${chips.map(c => `<button type="button" class="fchip" data-act="filter" data-id="${esc(c[0])}" aria-pressed="${S.filter === c[0]}">${esc(c[1])}</button>`).join('')}</div>
+  <p class="logsum"><strong class="num">${esc(fmtDur(tMin))}</strong> tööd · <strong class="num">${esc(eur(tEarn))}</strong> tasu</p>
+  ${body}`;
+}
+
+function planRow(p, showDate) {
+  const m = memberById(p.memberId);
+  const name = m ? m.name : (p.memberName || 'Endine pereliige');
+  const hue = m ? hueOf(m) : HUES[0];
+  const done = p.status === 'done';
+  const okDue = /^\d{4}-\d{2}-\d{2}$/.test(String(p.due || ''));
+  const late = !done && okDue && p.due < todayStr();
+  const when = [showDate && okDue ? fmtShort(p.due) : '', p.time ? 'kell ' + p.time : ''].filter(Boolean).join(' · ');
+  const doneOn = done ? (p.doneDate || (p.doneAt ? ymd(new Date(p.doneAt)) : '')) : '';
+  return `<article class="entry plan${done ? ' done' : ''}" style="--h:${hue}">
+    <div class="avatar" aria-hidden="true">${esc(initial(name))}</div>
+    <div>
+      <h3>${esc(p.taskName || 'Töö')}</h3>
+      <p class="meta"><span>${esc(name)}${p.memberId === S.me ? '<span class="me-tag">Sina</span>' : ''}</span>${when ? `<span class="when${late ? ' late' : ''}">${esc(when)}</span>` : ''}${p.repeat ? `<span class="rep">${ICON.repeat}${esc(repLabel(p.repeat))}</span>` : ''}${doneOn && /^\d{4}-\d{2}-\d{2}$/.test(doneOn) ? `<span>Tehtud ${esc(fmtShort(doneOn))}</span>` : ''}</p>
+      ${p.note ? `<p class="note">${esc(p.note)}</p>` : ''}
+    </div>
+    <div class="entry-side">
+      ${!done && canDonePlan(p) ? `<button type="button" class="btn btn-small btn-primary" data-act="plan-done" data-id="${esc(p.id)}" aria-label="Märgi tehtuks: ${esc(p.taskName || '')}">Tehtud</button>` : ''}
+      ${isAdmin() ? `<div class="entry-acts">${done ? '' : `<button type="button" class="mini" data-act="plan-edit" data-id="${esc(p.id)}" aria-label="Muuda ülesannet: ${esc(p.taskName || '')}">${ICON.edit}</button>`}<button type="button" class="mini danger" data-act="plan-del" data-id="${esc(p.id)}" aria-label="Kustuta ülesanne: ${esc(p.taskName || '')}">${ICON.trash}</button></div>` : ''}
+    </div>
+  </article>`;
+}
+
+function viewPlan() {
+  const act = activeMembers(), admin = isAdmin(), t = todayStr();
+  if (S.pfilter !== 'all' && !act.some(m => m.id === S.pfilter)) S.pfilter = 'all';
+  const ordered = act.slice(), mi = ordered.findIndex(m => m.id === S.me);
+  if (mi > 0) ordered.unshift(ordered.splice(mi, 1)[0]);
+  const chips = [['all', 'Kõik']].concat(ordered.map(m => [m.id, m.id === S.me ? m.name + ' (sina)' : m.name]));
+  const pick = p => S.pfilter === 'all' || p.memberId === S.pfilter;
+  const open = S.plan.filter(p => p.status !== 'done' && pick(p)).sort(planSort);
+  const late = open.filter(p => String(p.due || '') < t);
+  const groups = [];
+  open.filter(p => String(p.due || '') >= t).forEach(p => {
+    let g = groups[groups.length - 1];
+    if (!g || g.date !== p.due) { g = { date: p.due, items: [] }; groups.push(g); }
+    g.items.push(p);
+  });
+  const cut = addDays(t, -14);
+  const done = S.plan.filter(p => p.status === 'done' && pick(p) && String(p.doneDate || '') >= cut)
+    .sort((a, b) => String(b.doneDate || '').localeCompare(String(a.doneDate || '')));
+  let body;
+  if (!S.booted || (S.db && !S.got.plan)) body = '<div class="ph"></div><div class="ph"></div>';
+  else if (!S.db) body = '';
+  else if (!act.length) body = '<p class="empty">Pereliikmeid pole veel lisatud.</p>';
+  else if (!late.length && !groups.length) body = `<p class="empty">${S.pfilter === 'all' ? 'Ülesandeid pole veel.' : 'Sellel inimesel pole ülesandeid.'}${admin ? ' Vajuta „Lisa ülesanne“.' : ' Adminid saavad neid siia lisada.'}</p>`;
+  else {
+    body = (late.length ? `<section class="day"><div class="day-head late"><h2>Üle tähtaja</h2><span class="num">${late.length}</span></div><div class="entries">${late.map(p => planRow(p, true)).join('')}</div></section>` : '')
+      + groups.map(g => `<section class="day"><div class="day-head"><h2>${esc(fmtDay(g.date))}</h2><span class="num">${g.items.length}</span></div><div class="entries">${g.items.map(p => planRow(p, false)).join('')}</div></section>`).join('');
+  }
+  return `${banners()}
+  <p class="muted">${admin ? 'Pane teistele ülesandeid koos tähtajaga. ' : ''}Kui töö on tehtud, vajuta „Tehtud“ ja märgi, kaua see võttis.</p>
+  ${admin && S.db && act.length ? `<button type="button" class="btn btn-primary plan-add" data-act="plan-add">${ICON.plus}<span>Lisa ülesanne</span></button>` : ''}
+  <div class="filters" role="group" aria-label="Näita pereliiget">${chips.map(c => `<button type="button" class="fchip" data-act="pfilter" data-id="${esc(c[0])}" aria-pressed="${S.pfilter === c[0]}">${esc(c[1])}</button>`).join('')}</div>
+  ${body}
+  ${done.length ? `<details class="donebox"><summary>Tehtud viimase 14 päeva jooksul (${done.length})</summary><div class="entries">${done.map(p => planRow(p, true)).join('')}</div></details>` : ''}`;
+}
+
+function myPlanCard() {
+  const me = meMember();
+  if (!me || !S.db || !S.got.plan) return '';
+  const horizon = addDays(todayStr(), 7);
+  const mine = S.plan.filter(p => p.status !== 'done' && p.memberId === me.id && String(p.due || '') <= horizon).sort(planSort);
+  if (!mine.length) return '';
+  const shown = mine.slice(0, 4);
+  return `<section><div class="sec-title"><h2>Sinu ülesanded</h2><button type="button" class="link" data-act="tab" data-tab="plan">Kogu graafik</button></div><div class="entries">${shown.map(p => planRow(p, true)).join('')}</div>${mine.length > shown.length ? `<p class="muted small">Veel ${mine.length - shown.length} ülesannet graafikus.</p>` : ''}</section>`;
+}
+
+function viewSettings() {
+  const cfgOk = S.db && canConfig();
+  const act = activeMembers(), off = S.members.filter(m => !isActive(m));
+  const n = act.length || DEFAULT_PEOPLE, share = S.cfg.monthlyCost / n, rate = S.cfg.hourlyRate;
+  const mrow = (m, off1) => `<li class="mrow${off1 ? ' off' : ''}" style="--h:${hueOf(m)}"><span class="avatar" aria-hidden="true">${esc(initial(m.name))}</span><span class="mname">${esc(m.name)}${m.admin === true ? '<span class="me-tag">Admin</span>' : ''}</span>${cfgOk
+    ? (off1
+      ? `<button type="button" class="btn btn-small" data-act="restore-member" data-id="${esc(m.id)}">Too tagasi</button>`
+      : `<button type="button" class="mini" data-act="rename-member" data-id="${esc(m.id)}" aria-label="Muuda nime: ${esc(m.name)}">${ICON.edit}</button><button type="button" class="mini" data-act="remove-member" data-id="${esc(m.id)}" aria-label="Eemalda: ${esc(m.name)}">${ICON.trash}</button>`)
+    : ''}</li>`;
+  const me = meMember();
+  const canMe = !!S.db && S.canWrite !== false && act.length > 0;
+  const mine = me && canMe ? S.ptasks.filter(p => p.memberId === me.id).sort(byName) : [];
+  const profileCard = canMe ? `<section class="card">
+    <div class="sec-title"><h2>Sinu profiil</h2><button type="button" class="btn btn-small" data-act="change-me">${me ? 'Vaheta' : 'Vali nimi'}</button></div>
+    ${me ? `<ul class="mlist"><li class="mrow" style="--h:${hueOf(me)}"><span class="avatar" aria-hidden="true">${esc(initial(me.name))}</span><span class="mname">${esc(me.name)}</span></li></ul><p class="muted small">Töö lisamisel on see nimi vaikimisi valitud. Valik jääb meelde ainult selles telefonis.</p>${isAdmin() ? '<p class="muted small"><strong>Sa oled admin:</strong> saad panna teistele ülesandeid graafikusse ning parandada ja kustutada kõigi töid.</p>' : ''}` : '<p class="muted">Vali oma nimi, siis on töö lisamine kiirem.</p>'}
+  </section>` : '';
+  const myTasksCard = me && canMe ? `<section class="card">
+    <div class="sec-title"><h2>Minu tegevused</h2><button type="button" class="btn btn-small" data-act="add-ptask">${ICON.plus}<span>Lisa</span></button></div>
+    <p class="muted small">Tegevused, mida teed ise ja mida ühises nimekirjas pole. Need on valikus ainult sinu jaoks.</p>
+    ${mine.length ? `<div class="taglist">${mine.map(p => `<span class="tag">${esc(p.name)}<button type="button" data-act="del-ptask" data-id="${esc(p.id)}" aria-label="Eemalda tegevus: ${esc(p.name)}">${ICON.close}</button></span>`).join('')}</div>` : '<p class="muted">Sul pole veel oma tegevusi. Lisa siia või vali töö lisamisel „+ Uus tegevus“.</p>'}
+  </section>` : '';
+  const allP = cfgOk && S.ptasks.length ? `<section class="card">
+    <div class="sec-title"><h2>Pereliikmete tegevused</h2></div>
+    <p class="muted small">Tegevused, mille pereliikmed on ise lisanud. Saad need teha kõigile valitavaks.</p>
+    <ul class="mlist">${S.ptasks.slice().sort(byName).map(p => { const pm = memberById(p.memberId); return `<li class="prow"><span class="ptext">${esc(p.name)}<small>${esc(pm ? pm.name : 'Endine pereliige')}</small></span><button type="button" class="btn btn-small" data-act="promote-ptask" data-id="${esc(p.id)}">Tee ühiseks</button><button type="button" class="mini" data-act="del-ptask" data-id="${esc(p.id)}" aria-label="Eemalda tegevus: ${esc(p.name)}">${ICON.trash}</button></li>`; }).join('')}</ul>
+  </section>` : '';
+  const shareCard = S.isOwner ? `<section class="card">
+    <h2>Pere kutsumine</h2>
+    <ol class="steps">
+      <li>Ava see leht Claude'is ja vajuta jagamise nuppu.</li>
+      <li>Lisa iga pereliikme e-post ja anna talle õigus andmeid muuta. Neil on vaja Claude'i kontot, seda saab luua sama e-posti aadressiga.</li>
+      <li>Kui pereliige lehe avab, valib ta oma nime. See jääb tema telefoni meelde.</li>
+    </ol>
+    <p class="muted small">Kulusid, tunnitasu, pereliikmeid ja ühiseid tegevusi saad muuta ainult sina. Adminid (vaata kaarti „Adminid“) panevad ülesandeid graafikusse. Teised lisavad ja muudavad oma töid.</p>
+  </section>` : '';
+  const famCard = standalone && S.db ? `<section class="card">
+    <h2>Pere link</h2>
+    <p class="muted small">Saada see link uuele pereliikmele. Link avab lehe ja sisse logimist pole vaja. Hoia link pere sees: kes seda teab, näeb ja saab muuta kõiki pere andmeid.</p>
+    <div class="field"><label for="fam-link">Link</label><input id="fam-link" type="text" readonly value="${esc(famLink())}"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn btn-small" data-act="copy-link">Kopeeri</button>${navigator.share ? '<button type="button" class="btn btn-small" data-act="share-link">Jaga</button>' : ''}<button type="button" class="btn btn-small" data-act="fam-change">Vaheta pere</button></div>
+  </section>` : '';
+  const admins = act.filter(m => m.admin === true);
+  const adminCard = S.db && act.length ? `<section class="card">
+    <div class="sec-title"><h2>Adminid</h2></div>
+    <p class="muted small">Adminid panevad teistele ülesandeid graafikusse ning saavad parandada ja kustutada kõigi töid. ${standalone ? 'Kulude, tunnitasu ja pereliikmete muutmine on samuti ainult adminidel. Kui adminiks pole kedagi määratud, saavad kõik seadeid muuta.' : 'Kulude, tunnitasu ja pereliikmete muutmine jääb omanikule.'}</p>
+    ${cfgOk
+      ? `<div class="taglist">${act.map(m => `<button type="button" class="fchip" data-act="toggle-admin" data-id="${esc(m.id)}" aria-pressed="${m.admin === true}">${esc(m.name)}</button>`).join('')}</div><p class="muted small">Puuduta nime, et teha see inimene adminiks või admin eemaldada.${standalone ? '' : ' Lehe omanik on alati admin.'}</p>`
+      : (admins.length ? `<div class="taglist">${admins.map(m => `<span class="tag plain">${esc(m.name)}</span>`).join('')}</div>` : '<p class="muted">Adminiks pole veel kedagi määratud.</p>')}
+  </section>` : '';
+  return `${banners()}
+  ${profileCard}
+  <section class="card">
+    <div class="sec-title"><h2>Raha</h2>${cfgOk ? `<button type="button" class="btn btn-small" data-act="edit-money">${ICON.edit}<span>Muuda</span></button>` : ''}</div>
+    <dl class="rows">
+      <div><dt>Maja kulud kuus</dt><dd class="num">${esc(eur(S.cfg.monthlyCost))}</dd></div>
+      <div><dt>Pereliikmeid</dt><dd class="num">${n}</dd></div>
+      <div><dt>Ühe inimese osa</dt><dd class="num">${esc(eur(share))}</dd></div>
+      <div><dt>Tunnitasu</dt><dd class="num">${esc(eur(rate))}</dd></div>
+      <div><dt>Osa katmiseks vaja</dt><dd class="num">${rate > 0 ? esc(fmtDur(Math.round(share / rate * 60))) : '–'}</dd></div>
+    </dl>
+    <p class="muted small">Iga töötund vähendab sinu osa tunnitasu võrra. Kui töö katab terve osa, ei pea sa sel kuul maksma.</p>
+  </section>
+  <section class="card">
+    <div class="sec-title"><h2>Pereliikmed</h2>${cfgOk ? `<button type="button" class="btn btn-small" data-act="add-members">${ICON.plus}<span>Lisa</span></button>` : ''}</div>
+    ${act.length ? `<ul class="mlist">${act.map(m => mrow(m, false)).join('')}</ul>` : '<p class="muted">Pereliikmeid pole veel lisatud.</p>'}
+    ${off.length ? `<h3 class="sub-h">Eemaldatud</h3><ul class="mlist">${off.map(m => mrow(m, true)).join('')}</ul>` : ''}
+  </section>
+  ${adminCard}
+  <section class="card">
+    <div class="sec-title"><h2>Tegevused</h2>${cfgOk ? `<button type="button" class="btn btn-small" data-act="add-task">${ICON.plus}<span>Lisa</span></button>` : ''}</div>
+    ${S.tasks.length ? `<div class="taglist">${S.tasks.map(t => `<span class="tag${cfgOk ? '' : ' plain'}">${esc(t.name)}${cfgOk ? `<button type="button" data-act="del-task" data-id="${esc(t.id)}" aria-label="Eemalda tegevus: ${esc(t.name)}">${ICON.close}</button>` : ''}</span>`).join('')}</div>` : '<p class="muted">Tegevusi pole. Töö lisamisel saad alati valida „+ Uus tegevus“.</p>'}
+  </section>
+  ${myTasksCard}${allP}${shareCard}${famCard}
+  <details class="diag"><summary>Ühenduse info</summary>
+    <dl class="rows">
+      <div><dt>Andmebaas</dt><dd>${S.db ? (standalone ? 'Firebase: ' + esc(KT.projectId) : 'ühendatud') : 'puudub'}</dd></div>
+      <div><dt>Roll</dt><dd>${standalone ? (isAdmin() ? 'admin' : meMember() ? 'pereliige' : 'külaline') : (S.isOwner ? 'omanik' : S.canEditLvl ? 'muutja' : S.canWrite === false ? 'vaataja' : S.canWrite ? 'kaasautor' : 'teadmata')}</dd></div>
+      <div><dt>Andmete salvestamine</dt><dd>${S.canWrite === true ? 'lubatud' : S.canWrite === false ? 'keelatud' : 'teadmata'}</dd></div>
+      <div><dt>Seadete muutmine</dt><dd>${canConfig() ? 'lubatud' : 'keelatud'}</dd></div>
+      <div><dt>Vormid</dt><dd>${S.env.forms === true ? 'töötavad' : S.env.forms === false ? 'blokeeritud (kasutan nuppe)' : 'teadmata'}</dd></div>
+      <div><dt>Ekraan</dt><dd class="num">${esc(screenInfo())}</dd></div>
+      <div><dt>Lehe versioon</dt><dd class="num">${esc(BUILD)}</dd></div>
+    </dl>
+    ${S.lastErr ? `<p class="last">Viimane viga: ${esc(S.lastErr)}</p>` : ''}
+  </details>`;
+}
+
+/* ================= keep bottom sheets above the on-screen keyboard =================
+   Only acts when the visible height really shrank by a keyboard-sized amount;
+   otherwise the CSS defaults apply, so a viewer that reports odd values changes nothing. */
+(function () {
+  const vv = window.visualViewport;
+  if (!vv) return;
+  const root = document.documentElement;
+  let base = 0;
+  const clear = () => { root.classList.remove('kb'); root.style.removeProperty('--kb'); root.style.removeProperty('--vvh'); };
+  const apply = () => {
+    const ih = window.innerHeight, h = vv.height;
+    if (!(ih > 300) || !(h > 0)) { clear(); return; }
+    if (h > base) base = h;
+    const gap = Math.round(ih - h - (vv.offsetTop || 0));
+    if ((vv.scale || 1) <= 1.01 && gap >= 120 && gap <= ih * 0.6 && h >= ih * 0.3 && base - h >= 120) {
+      root.style.setProperty('--kb', gap + 'px');
+      root.style.setProperty('--vvh', Math.round(h) + 'px');
+      root.classList.add('kb');
+    } else clear();
+  };
+  vv.addEventListener('resize', apply);
+  vv.addEventListener('scroll', apply);
+  window.addEventListener('orientationchange', () => setTimeout(apply, 250));
+  document.addEventListener('focusin', () => setTimeout(apply, 120));
+  apply();
+})();
+
+/* ================= toast & dialogs ================= */
+let toastT = 0;
+function toast(msg, ms) {
+  const t = $('#toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), ms || 2800);
+}
+function showErr(sel, msg) {
+  const el = $(sel); if (!el) return;
+  el.textContent = msg || ''; el.hidden = !msg;
+}
+function openDlg(dlg) { if (!dlg.open) dlg.showModal(); }
+
+/* Dialogs are plain elements (a dimmed overlay holding a sheet), not native <dialog>:
+   they behave the same in every viewer. A tap on the dimmed area closes a sheet that has no typed input. */
+function initDialogs() {
+  $$('.dlg').forEach(d => {
+    const wrap = d.parentElement;
+    d.open = false;
+    d.showModal = () => {
+      if (d.open) return;
+      d.open = true; d.setAttribute('open', ''); delete d.dataset.dirty;
+      wrap.hidden = false;
+      document.documentElement.classList.add('dlg-on');
+      try { d.focus({ preventScroll: true }); } catch (_) { /* ignore */ }
+    };
+    d.close = () => {
+      if (!d.open) return;
+      d.open = false; d.removeAttribute('open');
+      wrap.hidden = true;
+      if (!$$('.dlg[open]').length) document.documentElement.classList.remove('dlg-on');
+      d.dispatchEvent(new Event('close'));
+    };
+    d.requestDismiss = () => {
+      const ev = new Event('cancel', { cancelable: true });
+      d.dispatchEvent(ev);
+      if (!ev.defaultPrevented) d.close();
+    };
+    const dirty = () => { d.dataset.dirty = '1'; };
+    d.addEventListener('input', dirty);
+    d.addEventListener('change', dirty);
+    wrap.addEventListener('click', ev => {
+      if (ev.target !== wrap) return;
+      if (d.dataset.dirty === '1' && (d.id === 'entry-dialog' || d.id === 'form-dialog')) return;
+      d.requestDismiss();
+    });
+  });
+  document.addEventListener('keydown', ev => {
+    if (ev.key !== 'Escape') return;
+    const open = $$('.dlg[open]'), top = open[open.length - 1];
+    if (top) { ev.preventDefault(); top.requestDismiss(); }
+  });
+}
+
+function reportJsError(err) {
+  const msg = String((err && (err.message || err.code)) || err || 'viga').slice(0, 160);
+  S.lastErr = 'js: ' + msg;
+  try { toast('Viga: ' + msg.slice(0, 80)); } catch (_) { /* ignore */ }
+}
+window.addEventListener('error', ev => { S.lastErr = 'js: ' + String((ev && ev.message) || 'viga').slice(0, 160); });
+window.addEventListener('unhandledrejection', ev => {
+  const r = ev && ev.reason;
+  S.lastErr = 'js: ' + String((r && (r.message || r.code)) || r || 'viga').slice(0, 160);
+});
+
+function askConfirm(o) {
+  return new Promise(res => {
+    const dlg = $('#confirm-dialog');
+    let done = false;
+    const fin = v => { if (!done) { done = true; res(v); } };
+    dlg.innerHTML = `<div class="sheet-head"><h2>${esc(o.title)}</h2></div>
+      <div class="sheet-body">${o.detail ? `<p class="confirm-detail"><strong>${esc(o.detail)}</strong></p>` : ''}${o.text ? `<p>${esc(o.text)}</p>` : ''}</div>
+      <div class="sheet-foot"><button type="button" class="btn" data-c="no">Tühista</button><button type="button" class="btn btn-danger grow" data-c="yes">${esc(o.ok || 'Kustuta')}</button></div>`;
+    dlg.onclick = ev => { const b = ev.target.closest('[data-c]'); if (b) { fin(b.dataset.c === 'yes'); dlg.close(); } };
+    dlg.addEventListener('close', () => fin(false), { once: true });
+    openDlg(dlg);
+  });
+}
+
+function fieldHtml(f) {
+  const id = 'g-' + f.name;
+  let ctl;
+  if (f.type === 'textarea') {
+    ctl = `<textarea id="${id}" name="${esc(f.name)}" rows="${f.rows || 5}" placeholder="${esc(f.placeholder || '')}">${esc(f.value || '')}</textarea>`;
+  } else if (f.type === 'number') {
+    ctl = `<input id="${id}" name="${esc(f.name)}" type="number" inputmode="decimal" step="${esc(f.step || 'any')}" min="${esc(f.min || '0')}" value="${esc(f.value == null ? '' : f.value)}">`;
+  } else {
+    ctl = `<input id="${id}" name="${esc(f.name)}" type="text" maxlength="${f.max || 60}" autocomplete="off" value="${esc(f.value == null ? '' : f.value)}" placeholder="${esc(f.placeholder || '')}">`;
+  }
+  return `<div class="field"><label for="${id}">${esc(f.label)}</label>${f.suffix ? `<div class="with-suffix">${ctl}<span>${esc(f.suffix)}</span></div>` : ctl}${f.hint ? `<p class="muted small">${esc(f.hint)}</p>` : ''}</div>`;
+}
+
+function openForm(cfg) {
+  const dlg = $('#form-dialog');
+  dlg.innerHTML = `<form id="gen-form" novalidate>
+    <div class="sheet-head"><h2>${esc(cfg.title)}</h2><button type="button" class="iconbtn" data-act="close-dialog" aria-label="Sulge">${ICON.close}</button></div>
+    <div class="sheet-body">
+      ${cfg.intro ? `<p class="muted">${esc(cfg.intro)}</p>` : ''}
+      ${cfg.fields.map(fieldHtml).join('')}
+      ${cfg.onInput ? '<div class="prev" id="gen-prev" aria-live="polite"></div>' : ''}
+      <p class="err" id="gen-err" role="alert" hidden></p>
+    </div>
+    <div class="sheet-foot">
+      ${cfg.secondary ? `<button type="button" class="btn" id="gen-sec">${esc(cfg.secondary.label)}</button>` : ''}
+      <button type="button" class="btn btn-primary grow" id="gen-ok">${esc(cfg.submit || 'Salvesta')}</button>
+    </div>
+  </form>`;
+  const form = $('#gen-form', dlg), ok = $('#gen-ok', dlg);
+  const run = async () => {
+    if (ok.disabled) return;
+    const vals = {};
+    $$('input,textarea', form).forEach(el => { vals[el.name] = el.value; });
+    const label = ok.textContent; ok.disabled = true; ok.textContent = 'Salvestan…';
+    showErr('#gen-err', '');
+    try {
+      const msg = await withTimeout(cfg.onSubmit(vals), 25000);
+      if (msg) showErr('#gen-err', msg); else dlg.close();
+    } catch (err) { showErr('#gen-err', errMsg(err, cfg.scope === 'personal' ? '' : 'config')); }
+    finally { ok.disabled = false; ok.textContent = label; }
+  };
+  ok.addEventListener('click', run);
+  form.addEventListener('submit', ev => { ev.preventDefault(); run(); });
+  form.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter' && ev.target && ev.target.tagName === 'INPUT') { ev.preventDefault(); run(); }
+  });
+  if (cfg.onInput) {
+    const upd = () => {
+      const vals = {};
+      $$('input,textarea', form).forEach(el => { vals[el.name] = el.value; });
+      cfg.onInput(vals, $('#gen-prev', dlg));
+    };
+    form.addEventListener('input', upd);
+    upd();
+  }
+  const sec = $('#gen-sec', dlg);
+  if (sec) sec.addEventListener('click', async () => {
+    sec.disabled = true;
+    try { await withTimeout(cfg.secondary.run(), 25000); dlg.close(); }
+    catch (err) { showErr('#gen-err', errMsg(err, cfg.scope === 'personal' ? '' : 'config')); }
+    finally { sec.disabled = false; }
+  });
+  openDlg(dlg);
+  const first = $('input,textarea', form); if (first) first.focus();
+}
+
+/* ================= settings actions ================= */
+function openMoney() {
+  openForm({
+    title: 'Raha ja tunnitasu',
+    intro: 'Maja kulud jagatakse pereliikmete vahel võrdselt. Tunnitasu kehtib uutele töödele.',
+    fields: [
+      { name: 'cost', label: 'Maja kulud kuus', type: 'number', value: S.cfg.monthlyCost, suffix: '€', step: '0.01' },
+      { name: 'rate', label: 'Tunnitasu', type: 'number', value: S.cfg.hourlyRate, suffix: '€ tunnis', step: '0.01' }
+    ],
+    onSubmit: async v => {
+      const cost = parseNum(v.cost), rate = parseNum(v.rate);
+      if (cost == null || rate == null) return 'Sisesta summad numbritena.';
+      await S.db.doc('config/main').set({ monthlyCost: cost, hourlyRate: rate });
+    }
+  });
+}
+
+function openMonthSettings() {
+  const has = !!monthDoc(S.ym);
+  openForm({
+    title: 'Kulud: ' + cap(fmtMonth(S.ym)),
+    intro: 'Sisesta selle kuu tegelikud kulud. Teiste kuude arvutused ei muutu.',
+    fields: [
+      { name: 'cost', label: 'Maja kulud', type: 'number', value: monthCost(S.ym), suffix: '€', step: '0.01' },
+      { name: 'people', label: 'Inimesi, kelle vahel kulud jagatakse', type: 'number', value: peopleFor(S.ym), step: '1', min: '1' }
+    ],
+    secondary: has ? { label: 'Kasuta vaikimisi', run: () => S.db.doc('config/main/months/' + S.ym).delete() } : null,
+    onSubmit: async v => {
+      const cost = parseNum(v.cost), people = Math.floor(parseNum(v.people) || 0);
+      if (cost == null) return 'Sisesta kulud numbrina.';
+      if (people < 1 || people > 50) return 'Inimesi peab olema vähemalt 1.';
+      await S.db.doc('config/main/months/' + S.ym).set({ cost, people });
+    }
+  });
+}
+
+async function addMembers(names) {
+  const col = S.db.collection('config/main/members');
+  let order = S.members.reduce((mx, m) => Math.max(mx, m.order || 0), 0);
+  const used = new Set(activeMembers().map(m => m.c));
+  const have = new Set(S.members.map(m => String(m.name || '').toLowerCase()));
+  let added = 0;
+  for (const raw of names) {
+    const name = raw.trim().slice(0, 30);
+    if (!name || have.has(name.toLowerCase())) continue;
+    let c = 0; while (used.has(c) && c < HUES.length) c++;
+    if (c >= HUES.length) c = S.members.length % HUES.length;
+    used.add(c); have.add(name.toLowerCase());
+    await col.add({ name, c, order: ++order, active: true, createdAt: Date.now() });
+    added++;
+  }
+  return added;
+}
+
+const splitNames = s => String(s || '').split(/[\n,;]+/).map(x => x.trim()).filter(Boolean);
+function openAddMembers() {
+  openForm({
+    title: 'Lisa pereliikmed',
+    intro: 'Kirjuta iga nimi eraldi reale (uus rida: klaviatuuri sisestusnupp) või eralda nimed komaga.',
+    fields: [{ name: 'names', label: 'Nimed', type: 'textarea', rows: 4, placeholder: 'Mari\nJaan\nLiis' }],
+    submit: 'Lisa',
+    onInput: (vals, box) => {
+      const names = splitNames(vals.names);
+      box.innerHTML = names.length
+        ? `<p class="muted small">${names.length} ${names.length === 1 ? 'pereliige' : 'pereliiget'}:</p><div class="taglist">${names.map(n => `<span class="tag plain">${esc(n.slice(0, 30))}</span>`).join('')}</div>`
+        : '';
+    },
+    onSubmit: async v => {
+      const names = splitNames(v.names);
+      if (!names.length) return 'Kirjuta vähemalt üks nimi.';
+      const n = await addMembers(names);
+      if (!n) return 'Need nimed on juba olemas.';
+    }
+  });
+}
+
+function openRename(id) {
+  const m = memberById(id); if (!m) return;
+  openForm({
+    title: 'Muuda nime',
+    fields: [{ name: 'name', label: 'Nimi', type: 'text', value: m.name, max: 30 }],
+    onSubmit: async v => {
+      const name = v.name.trim();
+      if (!name) return 'Nimi ei tohi olla tühi.';
+      await S.db.doc('config/main/members/' + id).update({ name });
+    }
+  });
+}
+
+async function setMemberActive(id, on) {
+  try { await withTimeout(S.db.doc('config/main/members/' + id).update({ active: on }), 20000); }
+  catch (e) { toast(errMsg(e, 'config')); }
+}
+
+async function removeMember(id) {
+  const m = memberById(id); if (!m) return;
+  const ok = await askConfirm({
+    title: 'Eemaldan: ' + m.name + '?',
+    text: 'Tööde ajalugu jääb alles. Ta kaob valikutest ja kulude jagamisest, mistõttu muutub ka varasemate kuude osa suurus. Saad ta hiljem tagasi tuua.',
+    ok: 'Eemalda'
+  });
+  if (ok) await setMemberActive(id, false);
+}
+
+function openAddTask() {
+  openForm({
+    title: 'Lisa tegevus',
+    fields: [{ name: 'name', label: 'Tegevuse nimi', type: 'text', placeholder: 'Näiteks: Autopesu', max: 40 }],
+    submit: 'Lisa',
+    onSubmit: async v => {
+      const name = v.name.trim();
+      if (!name) return 'Kirjuta tegevuse nimi.';
+      if (S.tasks.some(t => String(t.name).toLowerCase() === name.toLowerCase())) return 'Selline tegevus on juba olemas.';
+      const order = S.tasks.reduce((mx, t) => Math.max(mx, t.order || 0), 0) + 1;
+      await S.db.collection('config/main/tasks').add({ name, order });
+    }
+  });
+}
+
+async function deleteTask(id) {
+  const t = S.tasks.find(x => x.id === id); if (!t) return;
+  const ok = await askConfirm({ title: 'Eemaldan tegevuse „' + t.name + '“?', text: 'Vanad tööd jäävad logisse alles.', ok: 'Eemalda' });
+  if (!ok) return;
+  try { await withTimeout(S.db.doc('config/main/tasks/' + id).delete(), 20000); }
+  catch (e) { toast(errMsg(e, 'config')); }
+}
+
+/* ================= profile: who is using this phone ================= */
+function maybeAskIdentity() {
+  if (S.askedIdentity || !S.db || S.canWrite === false || !S.got.members) return;
+  if (S.me === '-' || meMember()) return;
+  if (!activeMembers().length) return;
+  if ($$('.dlg[open]').length) {
+    if (!S.idTimer) S.idTimer = setTimeout(() => { S.idTimer = 0; maybeAskIdentity(); }, 500);
+    return;
+  }
+  S.askedIdentity = true;
+  openIdentity(true);
+}
+
+function openIdentity(first) {
+  const dlg = $('#form-dialog'), act = activeMembers();
+  dlg.innerHTML = `<div class="sheet-head"><h2>Kes sa oled?</h2>${first ? '' : `<button type="button" class="iconbtn" data-act="close-dialog" aria-label="Sulge">${ICON.close}</button>`}</div>
+    <div class="sheet-body">
+      <p class="muted">Vali oma nimi. See jääb selle telefoni meelde, et töö lisamine oleks kiirem. Hiljem saad seda Seadetes muuta.</p>
+      <div class="idlist">${act.map(m => `<button type="button" class="idbtn" style="--h:${hueOf(m)}" data-act="pick-me" data-id="${esc(m.id)}"><span class="avatar" aria-hidden="true">${esc(initial(m.name))}</span><span>${esc(m.name)}</span></button>`).join('')}</div>
+    </div>
+    <div class="sheet-foot"><button type="button" class="btn grow" data-act="pick-none">Vaatan ainult</button></div>`;
+  openDlg(dlg);
+}
+
+function pickMe(id) {
+  const m = id ? memberById(id) : null;
+  S.me = m ? m.id : '-';
+  saveMe(S.me);
+  const d = $('#form-dialog'); if (d.open) d.close();
+  if (m) toast('Tere, ' + m.name + '!');
+  render();
+}
+
+function openAddPtask() {
+  const me = meMember(); if (!me) return;
+  openForm({
+    title: 'Lisa oma tegevus',
+    scope: 'personal',
+    intro: 'See tegevus on valikus ainult sinu jaoks.',
+    fields: [{ name: 'name', label: 'Tegevuse nimi', type: 'text', placeholder: 'Näiteks: Autopesu', max: 40 }],
+    submit: 'Lisa',
+    onSubmit: async v => {
+      const name = v.name.trim();
+      if (!name) return 'Kirjuta tegevuse nimi.';
+      const n = lower(name);
+      if (S.tasks.some(t => lower(t.name) === n) || S.ptasks.some(p => p.memberId === me.id && lower(p.name) === n)) return 'Selline tegevus on sul juba olemas.';
+      await S.db.collection('ptasks').add({ memberId: me.id, name, createdAt: Date.now() });
+    }
+  });
+}
+
+async function deletePtask(id) {
+  const p = S.ptasks.find(x => x.id === id); if (!p) return;
+  const ok = await askConfirm({ title: 'Eemaldan tegevuse „' + p.name + '“?', text: 'Vanad tööd jäävad logisse alles.', ok: 'Eemalda' });
+  if (!ok) return;
+  try { await withTimeout(S.db.doc('ptasks/' + id).delete(), 20000); }
+  catch (e) { toast(errMsg(e)); }
+}
+
+async function promotePtask(id) {
+  const p = S.ptasks.find(x => x.id === id); if (!p) return;
+  try {
+    if (!S.tasks.some(t => lower(t.name) === lower(p.name))) {
+      const order = S.tasks.reduce((mx, t) => Math.max(mx, t.order || 0), 0) + 1;
+      await withTimeout(S.db.collection('config/main/tasks').add({ name: p.name, order }), 20000);
+    }
+    await withTimeout(S.db.doc('ptasks/' + id).delete(), 20000);
+    toast('Tegevus on nüüd kõigile valitav');
+  } catch (e) { toast(errMsg(e, 'config')); }
+}
+
+/* ================= entry form ================= */
+const opt = (name, value, label, checked, hue) =>
+  `<label class="opt"${hue != null ? ` style="--h:${hue}"` : ''}><input type="radio" name="${name}" value="${esc(value)}"${checked ? ' checked' : ''}><span>${hue != null ? '<b class="dot"></b>' : ''}${esc(label)}</span></label>`;
+
+function taskChips(memberId, sel) {
+  const mine = S.ptasks.filter(p => p.memberId === memberId).sort(byName);
+  return S.tasks.map(t => opt('task', t.id, t.name, t.id === sel)).join('')
+    + (mine.length ? '<p class="chip-label">Isiklikud tegevused</p>' + mine.map(p => opt('task', 'p_' + p.id, p.name, ('p_' + p.id) === sel)).join('') : '')
+    + opt('task', OTHER, '+ Uus tegevus', sel === OTHER);
+}
+
+function entryFormHtml(e, pre, plan) {
+  const list = activeMembers().slice();
+  if (e && !list.some(m => m.id === e.memberId)) list.push({ id: e.memberId, name: e.memberName || 'Endine pereliige', c: 0 });
+  const selMember = e ? e.memberId : (pre || (meMember() ? S.me : ''));
+  const known = tid => S.tasks.some(t => t.id === tid) || S.ptasks.some(p => ('p_' + p.id) === tid && p.memberId === selMember);
+  const selTask = e ? (known(e.taskId) ? e.taskId : OTHER) : plan ? (S.tasks.some(t => t.id === plan.taskId) ? plan.taskId : OTHER) : '';
+  const custom = selTask === OTHER ? (e ? (e.taskName || '') : plan ? (plan.taskName || '') : '') : '';
+  const total = e ? e.minutes : 0;
+  const quick = [[15, '15 min'], [30, '30 min'], [45, '45 min'], [60, '1 h'], [90, '1,5 h'], [120, '2 h'], [180, '3 h']];
+  return `<form id="entry-form" novalidate>
+    <div class="sheet-head"><h2>${e ? 'Muuda tööd' : plan ? 'Märgi töö tehtuks' : 'Lisa töö'}</h2><button type="button" class="iconbtn" data-act="close-dialog" aria-label="Sulge">${ICON.close}</button></div>
+    <div class="sheet-body">
+      ${plan ? `<p class="plan-note" id="f-plan-note">Ülesanne graafikust: ${esc(plan.taskName || '')}${/^\d{4}-\d{2}-\d{2}$/.test(String(plan.due || '')) ? ' · ' + esc(fmtShort(plan.due)) : ''}${plan.time ? ' kell ' + esc(plan.time) : ''}. Pärast salvestamist märgitakse see tehtuks.</p>` : ''}
+      <fieldset class="field"><legend>Kes tegi?</legend>
+        <div class="chipset">${list.map(m => opt('who', m.id, m.name, m.id === selMember, hueOf(m))).join('')}</div>
+      </fieldset>
+      <fieldset class="field"><legend>Mis töö?</legend>
+        <div class="chipset" id="f-tasks">${taskChips(selMember, selTask)}</div>
+        <div id="f-custom-wrap" class="custom-wrap"${selTask === OTHER ? '' : ' hidden'}>
+          <input id="f-custom" type="text" maxlength="60" placeholder="Mis töö see oli?" autocomplete="off" value="${esc(custom)}" aria-label="Töö nimi">
+          <label class="check"><input type="checkbox" id="f-remember"${e || plan ? '' : ' checked'}><span>Jäta see tegevus minu nimekirja meelde</span></label>
+        </div>
+      </fieldset>
+      <fieldset class="field"><legend>Kaua see võttis?</legend>
+        <div class="dur">
+          <div class="dur-in"><input id="f-h" type="number" inputmode="numeric" min="0" max="24" step="1" value="${e ? Math.floor(total / 60) : ''}" placeholder="0" aria-label="Tunnid"><span>h</span></div>
+          <div class="dur-in"><input id="f-m" type="number" inputmode="numeric" min="0" max="59" step="5" value="${e ? total % 60 : ''}" placeholder="0" aria-label="Minutid"><span>min</span></div>
+          <output id="f-earn" class="earn num" aria-live="polite"></output>
+        </div>
+        <div class="quick">${quick.map(q => `<button type="button" data-min="${q[0]}">${q[1]}</button>`).join('')}</div>
+      </fieldset>
+      <div class="field"><span id="f-photo-label" style="font-weight:700">Pildid <span class="opt-note">(valikuline, kuni ${MAX_PHOTOS})</span></span>
+        <div id="f-photos" class="pthumbs"></div>
+        <label class="btn photo-btn" id="f-photobtn"><input id="f-file" type="file" accept="image/*" multiple aria-labelledby="f-photo-label">${ICON.camera}<span>Lisa pilt</span></label>
+      </div>
+      <div class="field"><label for="f-date">Millal?</label><input id="f-date" type="date" value="${esc(e ? e.date : todayStr())}" max="${esc(todayStr())}"></div>
+      <div class="field"><label for="f-note">Märkus <span class="opt-note">(valikuline)</span></label><textarea id="f-note" maxlength="300" rows="2" placeholder="Näiteks: pesin ka aknad">${esc(e ? e.note : '')}</textarea></div>
+      <p class="err" id="f-err" role="alert" hidden></p>
+    </div>
+    <div class="sheet-foot">
+      ${e ? '<button type="button" class="btn btn-danger" data-act="delete-entry">Kustuta töö</button>' : ''}
+      <button type="button" class="btn btn-primary grow" id="f-save">Salvesta</button>
+    </div>
+  </form>`;
+}
+
+function formMinutes() {
+  const h = parseInt($('#f-h').value, 10), m = parseInt($('#f-m').value, 10);
+  return (isNaN(h) ? 0 : Math.max(0, h)) * 60 + (isNaN(m) ? 0 : Math.max(0, m));
+}
+function updateEarn() {
+  const rate = F && F.entry ? rateOf(F.entry) : S.cfg.hourlyRate, min = formMinutes();
+  $('#f-earn').textContent = min ? '= ' + eur(min / 60 * rate) : '';
+}
+function renderPhotos() {
+  const box = $('#f-photos'); if (!box || !F) return;
+  box.innerHTML = F.photos.map((p, i) => `<div class="pthumb">${safeImg(p.thumb) ? `<img src="${p.thumb}" alt="Pilt ${i + 1}">` : ''}<button type="button" class="x" data-act="rm-photo" data-i="${i}" aria-label="Eemalda pilt ${i + 1}">${ICON.close}</button></div>`).join('')
+    + (F.processing ? '<div class="pthumb busy" aria-label="Pakin pilti"><span class="spin"></span></div>' : '');
+  const full = F.photos.length + F.processing >= MAX_PHOTOS;
+  $('#f-photobtn').classList.toggle('off', full);
+  $('#f-file').disabled = full;
+}
+function removePhoto(i) {
+  if (!F || F.busy) return;
+  const p = F.photos.splice(i, 1)[0];
+  if (p && p.id) F.removed.push(p.id);
+  renderPhotos();
+}
+
+function syncCustom(focus) {
+  const t = $('input[name=task]:checked'), on = !!t && t.value === OTHER;
+  $('#f-custom-wrap').hidden = !on;
+  if (on && focus) $('#f-custom').focus();
+}
+function rebuildTaskChips() {
+  const w = $('input[name=who]:checked'), c = $('input[name=task]:checked');
+  const who = w ? w.value : '', cur = c ? c.value : '';
+  let keep = cur;
+  if (cur.startsWith('p_') && !S.ptasks.some(p => ('p_' + p.id) === cur && p.memberId === who)) keep = '';
+  $('#f-tasks').innerHTML = taskChips(who, keep);
+  syncCustom(false);
+}
+
+function wireEntryForm() {
+  const form = $('#entry-form');
+  $('#f-save').addEventListener('click', () => onEntrySubmit());
+  form.addEventListener('submit', ev => { ev.preventDefault(); onEntrySubmit(); });
+  form.addEventListener('keydown', ev => {
+    const t = ev.target;
+    if (ev.key === 'Enter' && t && t.tagName === 'INPUT' && ['text', 'number', 'date'].includes(t.type)) { ev.preventDefault(); onEntrySubmit(); }
+  });
+  form.addEventListener('change', ev => {
+    if (ev.target.name === 'who') rebuildTaskChips();
+    if (ev.target.name === 'task') syncCustom(true);
+  });
+  ['#f-h', '#f-m'].forEach(s => $(s).addEventListener('input', updateEarn));
+  $$('.quick button', form).forEach(b => b.addEventListener('click', () => {
+    const min = +b.dataset.min; $('#f-h').value = Math.floor(min / 60); $('#f-m').value = min % 60; updateEarn();
+  }));
+  $('#f-file').addEventListener('change', ev => { const files = Array.from(ev.target.files || []); ev.target.value = ''; addFiles(files); });
+  renderPhotos(); updateEarn();
+}
+
+function openEntry(entry, pre, plan) {
+  if (!S.db) return;
+  if (!entry && !activeMembers().length) { toast('Lisa kõigepealt pereliikmed.'); return; }
+  const dlg = $('#entry-dialog');
+  F = { entry: entry || null, entryId: entry ? entry.id : S.db.collection('log/' + S.ym + '/entries').doc().id,
+        newTaskId: S.db.collection('ptasks').doc().id, plan: entry ? null : (plan || null), planFailed: false,
+        photos: [], removed: [], uploaded: [], processing: 0, busy: false, saved: false };
+  if (entry) (entry.photoIds || []).forEach((id, i) => F.photos.push({ id, thumb: (entry.thumbs || [])[i] || '' }));
+  dlg.innerHTML = entryFormHtml(entry, pre, F.plan);
+  wireEntryForm();
+  openDlg(dlg);
+}
+
+function readEntryForm() {
+  const whoEl = $('input[name=who]:checked'), taskEl = $('input[name=task]:checked');
+  const customName = $('#f-custom').value.trim(), minutes = formMinutes();
+  const date = $('#f-date').value, note = $('#f-note').value.trim();
+  if (!whoEl) return { error: 'Vali, kes töö tegi.' };
+  if (!taskEl) return { error: 'Vali, mis töö see oli.' };
+  if (taskEl.value === OTHER && !customName) return { error: 'Kirjuta, mis töö see oli.' };
+  if (minutes <= 0) return { error: 'Sisesta, kaua töö võttis.' };
+  if (minutes > 1440) return { error: 'See on üle 24 tunni. Kontrolli aega.' };
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return { error: 'Vali kuupäev.' };
+  if (date > todayStr()) return { error: 'Kuupäev ei saa olla tulevikus.' };
+  const m = memberById(whoEl.value), tv = taskEl.value;
+  let taskId = '', taskName = '';
+  if (tv === OTHER) taskName = customName;
+  else if (tv.startsWith('p_')) { const p = S.ptasks.find(x => ('p_' + x.id) === tv); taskId = tv; taskName = p ? p.name : ''; }
+  else { const t = S.tasks.find(x => x.id === tv); taskId = tv; taskName = t ? t.name : ''; }
+  const remember = !!$('#f-remember') && $('#f-remember').checked;
+  return {
+    memberId: whoEl.value,
+    memberName: m ? m.name : (F.entry && F.entry.memberName) || '',
+    taskId, taskName, other: tv === OTHER, remember,
+    minutes, date, note
+  };
+}
+
+async function onEntrySubmit(ev) {
+  if (ev && ev.preventDefault) ev.preventDefault();
+  if (!F || F.busy) return;
+  const v = readEntryForm();
+  if (v.error) { showErr('#f-err', v.error); return; }
+  showErr('#f-err', '');
+  const btn = $('#f-save');
+  F.busy = true; btn.disabled = true; btn.textContent = 'Salvestan…';
+  try {
+    await withTimeout(persistEntry(v), 40000);
+    $('#entry-dialog').close();
+    toast(F.entry ? 'Muudatused salvestatud' : F.planFailed ? 'Töö salvestatud, aga ülesannet ei saanud tehtuks märkida.' : F.plan ? 'Töö salvestatud, ülesanne tehtud' : 'Töö salvestatud', F.planFailed ? 6000 : 0);
+  } catch (err) {
+    showErr('#f-err', errMsg(err));
+  } finally {
+    F.busy = false; btn.disabled = false; btn.textContent = 'Salvesta';
+  }
+}
+
+async function persistEntry(v) {
+  const db = S.db, old = F.entry, id = F.entryId, ym = ymOf(v.date);
+  let taskId = v.taskId, taskName = v.taskName;
+  if (v.other) {
+    const n = lower(taskName);
+    const shared = S.tasks.find(t => lower(t.name) === n);
+    const personal = S.ptasks.find(p => p.memberId === v.memberId && lower(p.name) === n);
+    if (shared) { taskId = shared.id; taskName = shared.name; }
+    else if (personal) { taskId = 'p_' + personal.id; taskName = personal.name; }
+    else if (v.remember) {
+      await db.doc('ptasks/' + F.newTaskId).set({ memberId: v.memberId, name: taskName, createdAt: Date.now() });
+      taskId = 'p_' + F.newTaskId;
+    }
+  }
+  for (const p of F.photos) {
+    if (p.id) continue;
+    await db.doc('photos/' + p.docId).set({ entryId: id, data: p.data, createdAt: Date.now() });
+    p.id = p.docId; F.uploaded.push(p.docId);
+  }
+  const body = {
+    memberId: v.memberId, memberName: v.memberName, taskId, taskName,
+    by: old ? (old.by || '') : (meMember() ? S.me : ''),
+    minutes: v.minutes, rate: old ? rateOf(old) : S.cfg.hourlyRate,
+    date: v.date, month: ym, note: v.note,
+    photoIds: F.photos.map(p => p.id), thumbs: F.photos.map(p => p.thumb),
+    createdAt: old ? (old.createdAt || Date.now()) : Date.now(), updatedAt: Date.now()
+  };
+  await db.doc('log/' + ym + '/entries/' + id).set(body);
+  F.saved = true;
+  if (F.plan && !old) {
+    try { await completePlan(F.plan, v.date, id); } catch (err) { F.planFailed = true; errMsg(err, 'plan'); }
+  }
+  for (const pid of F.removed) { try { await db.doc('photos/' + pid).delete(); } catch (_) { /* ignore */ } }
+  const oldYm = old ? (old.month || ymOf(old.date)) : '';
+  if (old && oldYm !== ym) { try { await db.doc('log/' + oldYm + '/entries/' + old.id).delete(); } catch (_) { /* ignore */ } }
+  if (ym !== S.ym) setMonth(ym);
+}
+
+function askDeleteEntry(e) {
+  const m = memberById(e.memberId);
+  const who = m ? m.name : (e.memberName || '');
+  return askConfirm({
+    title: 'Kustutan selle töö?',
+    detail: [e.taskName || 'Töö', who, fmtDur(e.minutes), fmtShort(e.date)].filter(Boolean).join(' · '),
+    text: 'Töö ja selle pildid kustutatakse kõigi jaoks ega tule tagasi.',
+    ok: 'Kustuta'
+  });
+}
+
+function removeEntryDocs(e) {
+  return withTimeout((async () => {
+    await S.db.doc('log/' + (e.month || ymOf(e.date)) + '/entries/' + e.id).delete();
+    for (const pid of (e.photoIds || [])) { try { await S.db.doc('photos/' + pid).delete(); } catch (_) { /* ignore */ } }
+  })(), 30000);
+}
+
+/* delete from inside the open "Muuda tööd" sheet */
+async function deleteEntryFlow() {
+  const e = F && F.entry; if (!e || F.busy) return;
+  if (!(await askDeleteEntry(e))) return;
+  F.busy = true;
+  try {
+    await removeEntryDocs(e);
+    $('#entry-dialog').close();
+    toast('Töö kustutatud');
+  } catch (err) { showErr('#f-err', errMsg(err)); }
+  finally { F.busy = false; }
+}
+
+/* delete straight from the trash button on a work row */
+async function quickDeleteEntry(id) {
+  const e = S.entries.find(x => x.id === id);
+  if (!e || !S.db || !canEditEntry(e) || S.deleting.has(id)) return;
+  S.deleting.add(id);
+  try {
+    if (!(await askDeleteEntry(e))) return;
+    await removeEntryDocs(e);
+    toast('Töö kustutatud');
+  } catch (err) {
+    const code = err && err.code;
+    errMsg(err);
+    toast('Kustutamine ei õnnestunud. ' + (code === 'timeout' ? 'Ühendus on aeglane, proovi uuesti.' : 'Sul võib puududa muutmisõigus.'), 6000);
+  } finally { S.deleting.delete(id); }
+}
+
+/* ================= schedule: add / edit / finish / delete ================= */
+const popt = (type, name, value, label, checked, hue) =>
+  `<label class="opt"${hue != null ? ` style="--h:${hue}"` : ''}><input type="${type}" name="${name}" value="${esc(value)}"${checked ? ' checked' : ''}><span>${hue != null ? '<b class="dot"></b>' : ''}${esc(label)}</span></label>`;
+
+function planFormHtml(p) {
+  const list = activeMembers().slice();
+  if (p && !list.some(m => m.id === p.memberId)) list.push({ id: p.memberId, name: p.memberName || 'Endine pereliige', c: 0 });
+  const known = !!p && S.tasks.some(t => t.id === p.taskId);
+  const selTask = p ? (known ? p.taskId : OTHER) : '';
+  const multi = !p;
+  return `<form id="plan-form" novalidate>
+    <div class="sheet-head"><h2>${p ? 'Muuda ülesannet' : 'Lisa ülesanne'}</h2><button type="button" class="iconbtn" data-act="close-dialog" aria-label="Sulge">${ICON.close}</button></div>
+    <div class="sheet-body">
+      <fieldset class="field"><legend>Kellele?${multi ? ' <span class="opt-note">(võid valida mitu)</span>' : ''}</legend>
+        <div class="chipset" id="p-who">${list.map(m => popt(multi ? 'checkbox' : 'radio', 'pwho', m.id, m.name, !!p && m.id === p.memberId, hueOf(m))).join('')}</div>
+      </fieldset>
+      <fieldset class="field"><legend>Mis töö?</legend>
+        <div class="chipset" id="p-tasks">${S.tasks.map(t => popt('radio', 'ptask', t.id, t.name, t.id === selTask)).join('')}${popt('radio', 'ptask', OTHER, '+ Muu töö', selTask === OTHER)}</div>
+        <div id="p-custom-wrap" class="custom-wrap"${selTask === OTHER ? '' : ' hidden'}><input id="p-custom" type="text" maxlength="60" placeholder="Mis töö see on?" autocomplete="off" value="${esc(p && !known ? (p.taskName || '') : '')}" aria-label="Töö nimi"></div>
+      </fieldset>
+      <fieldset class="field"><legend>Millal peab valmis olema?</legend>
+        <div class="when-row"><input id="p-date" type="date" value="${esc(p && p.due ? p.due : todayStr())}" aria-label="Kuupäev"><input id="p-time" type="time" value="${esc(p && p.time ? p.time : '')}" aria-label="Kellaaeg (valikuline)"></div>
+        <p class="muted small">Kellaaja võid tühjaks jätta.</p>
+      </fieldset>
+      <fieldset class="field"><legend>Kas kordub?</legend>
+        <div class="chipset">${REPEATS.map(r => popt('radio', 'prep', r[0], r[1], ((p && p.repeat) || '') === r[0])).join('')}</div>
+      </fieldset>
+      <div class="field"><label for="p-note">Märkus <span class="opt-note">(valikuline)</span></label><textarea id="p-note" maxlength="300" rows="2" placeholder="Näiteks: ka aknad">${esc(p ? p.note : '')}</textarea></div>
+      <p class="err" id="p-err" role="alert" hidden></p>
+    </div>
+    <div class="sheet-foot">
+      <button type="button" class="btn btn-primary grow" id="p-save">${p ? 'Salvesta' : 'Lisa graafikusse'}</button>
+    </div>
+  </form>`;
+}
+
+function syncPlanCustom(focus) {
+  const t = $('input[name=ptask]:checked'), on = !!t && t.value === OTHER;
+  const w = $('#p-custom-wrap'); if (w) w.hidden = !on;
+  if (on && focus) $('#p-custom').focus();
+}
+
+function openPlanForm(p) {
+  if (!S.db || !isAdmin()) return;
+  if (!p && !activeMembers().length) { toast('Lisa kõigepealt pereliikmed.'); return; }
+  const dlg = $('#form-dialog');
+  P = { plan: p || null, ids: {}, busy: false };
+  dlg.innerHTML = planFormHtml(p);
+  const form = $('#plan-form', dlg);
+  $('#p-save', dlg).addEventListener('click', () => onPlanSubmit());
+  form.addEventListener('submit', ev => { ev.preventDefault(); onPlanSubmit(); });
+  form.addEventListener('keydown', ev => {
+    const t = ev.target;
+    if (ev.key === 'Enter' && t && t.tagName === 'INPUT' && ['text', 'date', 'time'].includes(t.type)) { ev.preventDefault(); onPlanSubmit(); }
+  });
+  form.addEventListener('change', ev => { if (ev.target.name === 'ptask') syncPlanCustom(true); });
+  openDlg(dlg);
+}
+
+async function onPlanSubmit() {
+  if (!P || P.busy) return;
+  const old = P.plan;
+  const who = $$('input[name=pwho]:checked'), taskEl = $('input[name=ptask]:checked');
+  const custom = $('#p-custom').value.trim(), due = $('#p-date').value, time = $('#p-time').value || '';
+  const repEl = $('input[name=prep]:checked'), rep = repEl ? repEl.value : '';
+  const note = $('#p-note').value.trim();
+  const fail = msg => showErr('#p-err', msg);
+  if (!who.length) return fail('Vali, kellele ülesanne on.');
+  if (!taskEl) return fail('Vali, mis töö see on.');
+  if (taskEl.value === OTHER && !custom) return fail('Kirjuta, mis töö see on.');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(due)) return fail('Vali kuupäev.');
+  if (!old && due < todayStr()) return fail('Kuupäev ei saa olla minevikus.');
+  if (time && !/^\d{2}:\d{2}$/.test(time)) return fail('Kontrolli kellaaega.');
+  showErr('#p-err', '');
+  let taskId = '', taskName = custom;
+  if (taskEl.value !== OTHER) { const t = S.tasks.find(x => x.id === taskEl.value); taskId = taskEl.value; taskName = t ? t.name : custom; }
+  const btn = $('#p-save'), label = btn.textContent;
+  P.busy = true; btn.disabled = true; btn.textContent = 'Salvestan…';
+  try {
+    await withTimeout((async () => {
+      for (const el of who) {
+        const m = memberById(el.value);
+        const body = { memberId: el.value, memberName: m ? m.name : (old && old.memberName) || '', taskId, taskName, due, time, repeat: rep, note, status: 'open', updatedAt: Date.now() };
+        if (old) await S.db.doc('plan/' + old.id).update(body);
+        else {
+          const id = P.ids[el.value] || (P.ids[el.value] = S.db.collection('plan').doc().id);
+          await S.db.doc('plan/' + id).set(Object.assign({ by: meMember() ? S.me : '', createdAt: Date.now() }, body));
+        }
+      }
+    })(), 30000);
+    $('#form-dialog').close();
+    toast(old ? 'Ülesanne salvestatud' : who.length > 1 ? 'Ülesanded lisatud' : 'Ülesanne lisatud');
+  } catch (err) { fail(errMsg(err, 'plan')); }
+  finally { P.busy = false; btn.disabled = false; btn.textContent = label; }
+}
+
+/* a scheduled job was done: a one-off is marked done, a repeating one moves to its next day */
+async function completePlan(p, doneDate, entryId) {
+  const ref = S.db.doc('plan/' + p.id);
+  if (p.repeat && REP_DAYS[p.repeat]) {
+    await ref.update({ due: nextDue(p.due || doneDate, p.repeat, doneDate), lastDone: doneDate, lastEntryId: entryId, updatedAt: Date.now() });
+  } else {
+    await ref.update({ status: 'done', doneAt: Date.now(), doneDate, entryId, doneBy: meMember() ? S.me : '', updatedAt: Date.now() });
+  }
+}
+
+function donePlan(id) {
+  const p = S.plan.find(x => x.id === id);
+  if (!p || p.status === 'done' || !canDonePlan(p)) return;
+  openEntry(null, p.memberId, p);
+}
+
+async function deletePlan(id) {
+  const p = S.plan.find(x => x.id === id);
+  const key = 'plan:' + id;
+  if (!p || !isAdmin() || S.deleting.has(key)) return;
+  S.deleting.add(key);
+  try {
+    const m = memberById(p.memberId);
+    const ok = await askConfirm({
+      title: 'Kustutan selle ülesande?',
+      detail: [p.taskName || 'Töö', m ? m.name : p.memberName, /^\d{4}-\d{2}-\d{2}$/.test(String(p.due || '')) ? fmtShort(p.due) : ''].filter(Boolean).join(' · '),
+      text: p.repeat && p.status !== 'done' ? 'Ülesanne ei kordu enam.' : 'Ülesanne eemaldatakse graafikust.',
+      ok: 'Kustuta'
+    });
+    if (!ok) return;
+    await withTimeout(S.db.doc('plan/' + id).delete(), 20000);
+    toast('Ülesanne kustutatud');
+  } catch (err) { errMsg(err, 'plan'); toast('Kustutamine ei õnnestunud. Sul võib puududa muutmisõigus.', 6000); }
+  finally { S.deleting.delete(key); }
+}
+
+async function toggleAdmin(id) {
+  const m = memberById(id);
+  if (!m || !S.db || !canConfig()) return;
+  const was = m.admin === true;
+  try {
+    await withTimeout(S.db.doc('config/main/members/' + id).update({ admin: !was }), 20000);
+    toast(was ? m.name + ' pole enam admin' : m.name + ' on nüüd admin');
+  } catch (err) { toast(errMsg(err, 'config'), 6000); }
+}
+
+/* ---- photos ---- */
+function loadImage(file) {
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); res(img); };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('img')); };
+    img.src = url;
+  });
+}
+function jpegFrom(img, maxEdge, q, maxChars) {
+  let edge = maxEdge, out = '';
+  for (let i = 0; i < 9; i++) {
+    const k = Math.min(1, edge / Math.max(img.naturalWidth, img.naturalHeight));
+    const w = Math.max(1, Math.round(img.naturalWidth * k)), h = Math.max(1, Math.round(img.naturalHeight * k));
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h); ctx.drawImage(img, 0, 0, w, h);
+    out = c.toDataURL('image/jpeg', q);
+    if (out.length <= maxChars) break;
+    if (q > 0.45) q -= 0.1; else edge = Math.round(edge * 0.85);
+  }
+  return out;
+}
+async function processImage(file) {
+  const img = await loadImage(file);
+  if (!img.naturalWidth || !img.naturalHeight) throw new Error('size');
+  const data = jpegFrom(img, 1000, 0.7, 120000), thumb = jpegFrom(img, 240, 0.62, 14000);
+  if (data.length > 200000 || !/^data:image\/jpeg/.test(data)) throw new Error('big');
+  return { docId: S.db.collection('photos').doc().id, data, thumb };
+}
+async function addFiles(files) {
+  if (!F) return;
+  const f0 = F;
+  for (const file of files) {
+    if (F !== f0) return;
+    if (F.photos.length + F.processing >= MAX_PHOTOS) { showErr('#f-err', 'Ühele tööle saab lisada kuni ' + MAX_PHOTOS + ' pilti.'); break; }
+    F.processing++; renderPhotos(); showErr('#f-err', '');
+    try { F.photos.push(await processImage(file)); }
+    catch (_) { showErr('#f-err', 'Seda pilti ei saanud lugeda. Proovi JPG- või PNG-faili.'); }
+    finally { F.processing--; renderPhotos(); }
+  }
+}
+
+async function getPhoto(id) {
+  if (photoCache.has(id)) return photoCache.get(id);
+  try {
+    const snap = await withTimeout(S.db.doc('photos/' + id).get(), 20000);
+    const d = snap.exists ? snap.data().data : null;
+    const val = safeImg(d) ? d : null;
+    if (val) photoCache.set(id, val);
+    return val;
+  } catch (_) { return null; }
+}
+
+function openLightbox(entryId, i) {
+  const e = S.entries.find(x => x.id === entryId);
+  if (!e || !(e.photoIds || []).length) return;
+  L = { e, i: Math.max(0, Math.min(i, e.photoIds.length - 1)) };
+  const dlg = $('#photo-dialog');
+  dlg.innerHTML = `<div class="lb-head"><span class="count num" id="lb-count"></span><button type="button" class="iconbtn" data-act="close-dialog" aria-label="Sulge">${ICON.close}</button></div>
+    <div class="lb-stage"><img id="lb-img" alt="Töö pilt"><p class="lb-msg" id="lb-msg" role="status"></p></div>
+    <div class="lb-nav"><button type="button" class="iconbtn" data-act="lb-prev" aria-label="Eelmine pilt">${ICON.left}</button><p class="lb-cap" id="lb-cap"></p><button type="button" class="iconbtn" data-act="lb-next" aria-label="Järgmine pilt">${ICON.right}</button></div>`;
+  openDlg(dlg);
+  showPhoto();
+}
+async function showPhoto() {
+  if (!L) return;
+  const cur = L, id = cur.e.photoIds[cur.i], total = cur.e.photoIds.length;
+  const m = memberById(cur.e.memberId);
+  const img = $('#lb-img'), msg = $('#lb-msg');
+  $('#lb-count').textContent = (cur.i + 1) + ' / ' + total;
+  $('#lb-cap').textContent = (cur.e.taskName || 'Töö') + ' · ' + (m ? m.name : (cur.e.memberName || '')) + ' · ' + fmtShort(cur.e.date);
+  $$('[data-act=lb-prev],[data-act=lb-next]', $('#photo-dialog')).forEach(b => { b.disabled = total < 2; });
+  const th = (cur.e.thumbs || [])[cur.i];
+  if (photoCache.has(id)) { img.classList.remove('blur'); img.src = photoCache.get(id); msg.textContent = ''; return; }
+  if (safeImg(th)) { img.src = th; img.classList.add('blur'); } else { img.removeAttribute('src'); }
+  msg.textContent = 'Laen pilti…';
+  const data = await getPhoto(id);
+  if (L !== cur || cur.i !== L.i || $('#lb-img') !== img) return;
+  if (data) { img.src = data; img.classList.remove('blur'); msg.textContent = ''; }
+  else msg.textContent = 'Pilti ei leitud.';
+}
+function stepPhoto(d) {
+  if (!L) return;
+  const n = L.e.photoIds.length; if (n < 2) return;
+  L.i = (L.i + d + n) % n; showPhoto();
+}
+
+/* ================= eraldiseisev versioon (Firebase) ================= */
+const DEFAULT_TASKS = [['koristamine', 'Koristamine'], ['vannituba', 'Vannituba ja WC'], ['pesu-pesemine', 'Pesu pesemine'], ['pesu-voltimine', 'Pesu voltimine ja triikimine'], ['noud', 'Nõude pesu'], ['toit', 'Toidu valmistamine'], ['aed', 'Aiatööd'], ['prygi', 'Prügi välja viimine'], ['pood', 'Poes käimine'], ['lumi', 'Lume rookimine']];
+
+function fbErrMsg(c) {
+  switch (c) {
+    case 'permission-denied': return 'Firebase ei luba seda teha. Kontrolli, et reeglid (firestore.rules) on Firebase\'is lisatud ja pere kood on õige.';
+    case 'unavailable': case 'deadline-exceeded': return 'Ühendus puudub või on aeglane. Kontrolli internetti ja proovi uuesti.';
+    case 'resource-exhausted': return 'Firebase\'i tasuta päevane limiit sai täis. Proovi homme uuesti.';
+    case 'invalid-argument': return 'Salvestamine ei õnnestunud. Pilt võib olla liiga suur.';
+    case 'not-found': return 'Seda kirjet enam pole. Ava leht uuesti.';
+    case 'sdk-load': return 'Firebase\'i skripti ei saanud laadida. Kontrolli internetti (või lülita reklaamiblokeerija välja) ja ava leht uuesti.';
+    case 'unauthenticated': case 'failed-precondition': return 'Firebase\'i seadistus ei klapi (' + c + '). Vaata README-st sammud 2 ja 3.';
+    default: return '';
+  }
+}
+
+function viewGate() {
+  if (S.gate === 'config') {
+    return `<section class="card">
+      <h2>Firebase on seadistamata</h2>
+      <p class="muted">Leht hoiab andmeid tasuta Firebase'i andmebaasis. Ava fail <strong>firebase-config.js</strong>, kleebi sinna oma Firebase'i seaded ja salvesta fail uuesti. Samm-sammuline juhend on failis <strong>README.md</strong>.</p>
+      ${KT && KT.projectId ? '' : '<p class="muted small">Kui faili <strong>firebase-config.js</strong> pole lehega samas kaustas, ei leia leht seadeid.</p>'}
+    </section>`;
+  }
+  if (S.gate === 'created') {
+    const link = KT.linkFor(KT.code());
+    return `<section class="card">
+      <h2>Pere on loodud</h2>
+      <p class="muted">Saada see link pereliikmetele (näiteks WhatsAppis). Link avab lehe ja sisse logimist pole vaja. Igaüks valib lehel oma nime.</p>
+      <div class="field"><label for="fam-link">Pere link</label><input id="fam-link" type="text" readonly value="${esc(link)}"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn" data-act="copy-link">Kopeeri link</button>${navigator.share ? '<button type="button" class="btn" data-act="share-link">Jaga</button>' : ''}</div>
+      <p class="muted small">Hoia link pere sees. Kes linki teab, näeb ja saab muuta kõiki pere andmeid. Sama link on hiljem Seadetes.</p>
+      <button type="button" class="btn btn-primary" data-act="gate-continue">Jätka</button>
+    </section>`;
+  }
+  return `<section class="card">
+      <h2>Sisene perega</h2>
+      <p class="muted">Ava link, mille pere sulle saatis. Või kleebi siia pere kood (või kogu link).</p>
+      <div class="field"><label for="gate-code">Pere kood</label><input id="gate-code" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="abcde-fghjk-mnpqr-stuvw" value=""></div>
+      <p class="err" id="gate-err" role="alert"${S.gateErr ? '' : ' hidden'}>${esc(S.gateErr || '')}</p>
+      <button type="button" class="btn btn-primary" data-act="gate-enter">Sisene</button>
+    </section>
+    ${KT.wantsNew() ? `<section class="card">
+      <h2>Esimene kord?</h2>
+      <p class="muted">Kui oled pere esimene kasutaja, loo uus pere. Kood tehakse automaatselt ja pärast saad pere lingi.</p>
+      <button type="button" class="btn" data-act="gate-new">Loo uus pere</button>
+    </section>` : ''}`;
+}
+
+function renderGate() {
+  $('#top').innerHTML = '<div class="top-in"><div class="brand-row"><h1 class="brand">Pere kodutööd</h1></div></div>';
+  $('#view').innerHTML = viewGate();
+  $('#nav').innerHTML = '';
+}
+
+async function bootStandalone() {
+  S.gate = ''; S.gateErr = ''; S.dbErr = null;
+  if (!bootStandalone.wired) {
+    bootStandalone.wired = true;
+    window.addEventListener('kt-queued', () => render());
+    /* a new link pasted into the address bar of an already open page only changes the #part: load the page again so it is read */
+    window.addEventListener('hashchange', () => { if (/(^|[#&])(k=|uus)/.test(location.hash)) location.reload(); });
+  }
+  if (!KT.configured) { S.gate = 'config'; S.booted = true; render(); return; }
+  if (KT.takeFromUrl() === 'bad') S.gateErr = 'See link on katki. Palu pereliikmel uus link saata.';
+  if (!KT.code()) { S.gate = 'code'; S.booted = true; render(); return; }
+  KT.syncUrl();                       // code stays in the address bar: bookmark / home-screen icon / other browser keep working
+  S.user = KT.user; S.isOwner = false; S.canEditLvl = true; S.canWrite = true;
+  KT.onWriteError = e => { toast(errMsg(e), 7000); render(); };
+  try { S.db = await KT.db(); }
+  catch (e) { S.db = null; S.dbErr = e; S.lastErr = String((e && (e.code || e.message)) || e).slice(0, 140); }
+  S.booted = true;
+  render();
+  if (!S.db) return;
+  clearTimeout(slowTimer);
+  slowTimer = setTimeout(() => { if (!allConfirmed()) { S.slow = true; render(); } }, 10000);
+  subscribeAll();
+}
+
+function gateEnter() {
+  const el = $('#gate-code'); if (!el) return;
+  const code = KT.parseCode(el.value);
+  if (!code) { showErr('#gate-err', 'Kood on liiga lühike või vigane. Kopeeri kogu kood või link.'); return; }
+  KT.setCode(code);
+  bootStandalone();
+}
+
+function openNewFamily() {
+  const sd = KT.seed || {};
+  openForm({
+    title: 'Loo uus pere',
+    intro: 'Kood tehakse automaatselt. Nimesid ja raha saad hiljem Seadetes muuta.',
+    fields: [
+      { name: 'cost', label: 'Maja kulud kuus', type: 'number', value: num(sd.monthlyCost, 2000), suffix: '€', step: '0.01' },
+      { name: 'rate', label: 'Tunnitasu', type: 'number', value: num(sd.hourlyRate, 10), suffix: '€ tunnis', step: '0.01' },
+      { name: 'names', label: 'Pereliikmed (üks rea kohta)', type: 'textarea', rows: 6, value: (Array.isArray(sd.members) ? sd.members : []).join('\n') },
+      { name: 'admins', label: 'Adminid (nimed komadega)', type: 'text', value: (Array.isArray(sd.admins) ? sd.admins : []).join(', '), max: 100, hint: 'Adminid panevad ülesandeid graafikusse ja muudavad seadeid.' }
+    ],
+    submit: 'Loo pere',
+    onSubmit: createFamily
+  });
+}
+
+async function createFamily(v) {
+  const cost = parseNum(v.cost), rate = parseNum(v.rate);
+  if (cost == null || rate == null) return 'Sisesta summad numbritena.';
+  const names = [];
+  splitNames(v.names).forEach(n => { n = n.slice(0, 30); if (n && !names.some(x => lower(x) === lower(n))) names.push(n); });
+  if (!names.length) return 'Kirjuta vähemalt üks pereliige.';
+  const admins = splitNames(v.admins).map(lower);
+  KT.setCode(KT.newCode());
+  try {
+    const db = await KT.db();
+    const b = db.batch();
+    b.set('config/main', { monthlyCost: cost, hourlyRate: rate });
+    DEFAULT_TASKS.forEach((t, i) => b.set('config/main/tasks/' + t[0], { name: t[1], order: i + 1 }));
+    const now = Date.now(), mcol = db.collection('config/main/members');
+    names.forEach((n, i) => {
+      const body = { name: n, c: i % HUES.length, order: i + 1, active: true, createdAt: now + i };
+      if (admins.includes(lower(n))) body.admin = true;
+      b.set('config/main/members/' + mcol.doc().id, body);
+    });
+    await b.commit();
+  } catch (e) { KT.clearCode(); throw e; }
+  KT.syncUrl();                       // #uus is replaced by #k=<new code>
+  S.gate = 'created'; render();
+}
+
+function famLink() { return KT.linkFor(KT.code()); }
+
+function copyLink() {
+  const link = famLink();
+  const done = () => toast('Link kopeeritud');
+  const fallback = () => {
+    const el = $('#fam-link');
+    if (el) { el.focus(); el.select(); try { if (document.execCommand('copy')) { done(); return; } } catch (_) { /* ignore */ } }
+    toast('Vajuta lingil pikalt ja vali „Kopeeri“.', 5000);
+  };
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(link).then(done, fallback); return; }
+  } catch (_) { /* ignore */ }
+  fallback();
+}
+
+function shareLink() {
+  try { if (navigator.share) navigator.share({ title: 'Pere kodutööd', url: famLink() }).catch(() => {}); } catch (_) { /* ignore */ }
+}
+
+async function changeFamily() {
+  const ok = await askConfirm({ title: 'Vahetan pere?', text: 'See telefon unustab praeguse pere ja sinu valitud nime. Andmed jäävad alles. Tagasi pääsemiseks on vaja pere linki.', ok: 'Vaheta' });
+  if (!ok) return;
+  KT.clearCode();
+  try { localStorage.removeItem('kt-me'); } catch (_) { /* ignore */ }
+  location.reload();
+}
+
+/* ================= events ================= */
+document.addEventListener('click', ev => {
+  const t = ev.target.closest('[data-act]');
+  if (!t || t.disabled) return;
+  const a = t.dataset.act, id = t.dataset.id;
+  try {
+  switch (a) {
+    case 'tab': S.tab = t.dataset.tab; render(); window.scrollTo(0, 0); break;
+    case 'month-prev': setMonth(shiftMonth(S.ym, -1)); break;
+    case 'month-next': if (S.ym < thisYm()) setMonth(shiftMonth(S.ym, 1)); break;
+    case 'month-now': setMonth(thisYm()); break;
+    case 'filter': S.filter = id; render(); break;
+    case 'filter-member': S.filter = id; S.tab = 'log'; render(); window.scrollTo(0, 0); break;
+    case 'add': openEntry(null, t.dataset.member || ''); break;
+    case 'edit-entry': { const en = S.entries.find(e => e.id === id); if (en && canEditEntry(en)) openEntry(en); break; }
+    case 'photo': openLightbox(t.dataset.entry, +t.dataset.i); break;
+    case 'close-dialog': { const d = t.closest('.dlg'); if (d) d.close(); break; }
+    case 'rm-photo': removePhoto(+t.dataset.i); break;
+    case 'delete-entry': deleteEntryFlow(); break;
+    case 'del-entry': quickDeleteEntry(id); break;
+    case 'pfilter': S.pfilter = id; render(); break;
+    case 'plan-add': openPlanForm(null); break;
+    case 'plan-edit': { const p = S.plan.find(x => x.id === id); if (p && isAdmin()) openPlanForm(p); break; }
+    case 'plan-del': deletePlan(id); break;
+    case 'plan-done': donePlan(id); break;
+    case 'toggle-admin': toggleAdmin(id); break;
+    case 'lb-prev': stepPhoto(-1); break;
+    case 'lb-next': stepPhoto(1); break;
+    case 'edit-money': openMoney(); break;
+    case 'edit-month': openMonthSettings(); break;
+    case 'add-members': openAddMembers(); break;
+    case 'rename-member': openRename(id); break;
+    case 'remove-member': removeMember(id); break;
+    case 'restore-member': setMemberActive(id, true); break;
+    case 'add-task': openAddTask(); break;
+    case 'del-task': deleteTask(id); break;
+    case 'change-me': openIdentity(false); break;
+    case 'pick-me': pickMe(id); break;
+    case 'pick-none': pickMe(''); break;
+    case 'add-ptask': openAddPtask(); break;
+    case 'del-ptask': deletePtask(id); break;
+    case 'promote-ptask': promotePtask(id); break;
+    case 'gate-enter': gateEnter(); break;
+    case 'gate-new': openNewFamily(); break;
+    case 'gate-continue': bootStandalone(); break;
+    case 'copy-link': copyLink(); break;
+    case 'share-link': shareLink(); break;
+    case 'fam-change': changeFamily(); break;
+    default: break;
+  }
+  } catch (err) { reportJsError(err); }
+});
+
+document.addEventListener('keydown', ev => { if (ev.key === 'Enter' && ev.target && ev.target.id === 'gate-code') { ev.preventDefault(); gateEnter(); } });
+
+initDialogs();
+const entryDlg = $('#entry-dialog');
+entryDlg.addEventListener('cancel', ev => { if (F && F.busy) ev.preventDefault(); });
+entryDlg.addEventListener('close', () => {
+  if (F && !F.saved && F.uploaded.length && S.db) {
+    const ids = F.uploaded.slice(); F.uploaded = [];
+    ids.forEach(pid => { S.db.doc('photos/' + pid).delete().catch(() => {}); });
+  }
+});
+const lbDlg = $('#photo-dialog');
+lbDlg.addEventListener('close', () => { L = null; });
+lbDlg.addEventListener('keydown', ev => {
+  if (ev.key === 'ArrowLeft') stepPhoto(-1);
+  if (ev.key === 'ArrowRight') stepPhoto(1);
+});
+
+boot();
+})();
+</script>
+</body>
+</html>

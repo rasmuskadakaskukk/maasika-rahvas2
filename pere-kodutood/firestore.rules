@@ -1,0 +1,20 @@
+rules_version = '2';
+
+// Pere kodutööd: Firestore'i reeglid.
+// Kõik pere andmed asuvad aadressil f/<pere kood>/... Pere kood on pikk juhuslik tekst,
+// mida teavad ainult pereliikmed. Koodide nimekirja välja küsida ei saa.
+// Kes koodi ei tea, ei saa andmeid ei lugeda ega muuta.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /f/{code}/{document=**} {
+      allow read, write: if code.size() >= 16 && code.size() <= 40;
+    }
+  }
+}
+
+// VALIKULINE LISATURVALISUS (soovitatav pärast pere loomist):
+// asenda rida
+//   allow read, write: if code.size() >= 16 && code.size() <= 40;
+// reaga (pane oma pere kood jutumärkide sisse, täpselt nii nagu Seadetes lingis #k= järel)
+//   allow read, write: if code == 'abcde-fghjk-mnpqr-stuvw';
+// Siis ei saa keegi kolmas sinu Firebase'i projekti oma andmete hoidmiseks kasutada.
